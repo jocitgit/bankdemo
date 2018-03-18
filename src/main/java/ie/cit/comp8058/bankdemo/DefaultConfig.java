@@ -1,4 +1,4 @@
-package ie.cit.soft8027.bankdemo;
+package ie.cit.comp8058.bankdemo;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package ie.cit.soft8027.bankdemo.controller;
+package ie.cit.comp8058.bankdemo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -18,17 +18,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import ie.cit.soft8027.bankdemo.entity.Token;
+import ie.cit.comp8058.bankdemo.entity.Token;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 public class TestController {
 	
 	@Autowired RestTemplate restTemplate;
+	
 	//Check how to make params optional - or set default values
-	@RequestMapping("/")
-    public String test(@RequestParam("code") String code, @RequestParam("state") String state) {
+	@RequestMapping("/test")
+    public String test(@RequestParam(value="code", defaultValue="") String code, @RequestParam(value="state", defaultValue="") String state) {
         System.out.println("Code: " + code);
         System.out.println("State: " + state);
         
@@ -45,12 +45,15 @@ public class TestController {
 
 		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
 		map.add("code", code);
-		map.add("redirect_uri", "http://localhost:8081");
+		map.add("redirect_uri", "http://localhost:8081/test");
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
 		//ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
 
+		
+		//get/postForObject/Entity throw RestClientException
+		
 		Token token = restTemplate.postForObject( uri, request , Token.class );
 		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
 		//System.out.println(response.getBody());

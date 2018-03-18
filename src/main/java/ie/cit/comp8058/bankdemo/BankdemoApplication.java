@@ -1,4 +1,4 @@
-package ie.cit.soft8027.bankdemo;
+package ie.cit.comp8058.bankdemo;
 
 
 import org.springframework.boot.CommandLineRunner;
@@ -17,10 +17,6 @@ public class BankdemoApplication implements CommandLineRunner {
 	
 	@Override
 	public void run(String... arg0) throws Exception {
-		//System.out.println("hello");
-		
-		
-		//System.out.println("done");
-		
+				
 	}
 }

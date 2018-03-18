@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div id="header" th:fragment="header">
+		<h1>PSD2 API Demo App</h1>
+
+		<div>
+			<p>
+				<a href="/main">Main Menu</a>
+			</p>
+		</div>
+		<div>
+			<p>
+				<a href="/login?withUI=true">Login with UI</a>
+			</p>
+		</div>
+		<div>
+			<p>
+				<a href="/login?withUI=false">Login without UI</a>
+			</p>
+		</div>
+
+		<div>
+			<p>
+				<a href="/logout">Logout</a>
+			</p>
+
+		</div>
+
+	</div>
+
+</body>
+</html>

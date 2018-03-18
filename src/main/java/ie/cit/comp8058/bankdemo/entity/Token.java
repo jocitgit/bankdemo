@@ -1,4 +1,4 @@
-package ie.cit.soft8027.bankdemo.entity;
+package ie.cit.comp8058.bankdemo.entity;
 
 public class Token {
 
