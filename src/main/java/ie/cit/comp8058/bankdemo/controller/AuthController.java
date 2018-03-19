@@ -61,8 +61,8 @@ public class AuthController {
 	
 	@RequestMapping("/auth")
     public String test(@RequestParam(value="code", required=false) String code, @RequestParam(value="state", required=false) String state, HttpServletResponse response) {
-        System.out.println("Code: " + code);
-        System.out.println("State: " + state);
+        //System.out.println("Code: " + code);
+        //System.out.println("State: " + state);
         
         if (code == null || state == null) {
         	//TODO - error handling & return
