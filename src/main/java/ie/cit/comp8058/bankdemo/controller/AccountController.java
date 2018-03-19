@@ -39,7 +39,7 @@ public class AccountController {
 		
 		// TODO - handle error if no cookie? or defaults to null?
 		if (accessToken == null) {
-			System.out.println("Access Token Cookie is null");
+			//System.out.println("Access Token Cookie is null");
 			return "home";
 		}
 		
@@ -68,7 +68,7 @@ public class AccountController {
 			JsonParser parser = accountsNode.traverse();
 			Account[] accounts = objectMapper.readValue(parser, Account[].class);
 			for (Account a : accounts) {
-				System.out.println(a);
+				//System.out.println(a);
 			}
 			model.addAttribute("accounts", accounts);
 			return "accountList";
