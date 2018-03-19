@@ -1,4 +1,4 @@
-package ie.cit.soft8027.bankdemo;
+package ie.cit.comp8058.bankdemo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
