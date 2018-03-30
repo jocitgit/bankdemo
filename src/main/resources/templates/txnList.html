@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<div th:replace="fragments/header:: header"></div>
+	<h1 th:text="#{txn.list.title}">Default Title</h1>
+<table>
+	<tr>
+		<th>Id</th>
+		<th>Type</th>
+		<th>Amount</th>
+		<th>Date</th>
+		<th>Currency</th>
+		<th>Message</th>
+		<th>Description</th>
+		<th>Creditor</th>
+		<th>Debtor</th>
+	</tr>
+	<tr th:each="txn: ${txns}">
+		<td th:text="${txn.transactionId}">Id</td>
+		<td th:text="${txn._type}">Type</td>
+		<td th:text="${txn.amount}">Amount</td>
+		<td th:text="${txn.bookingDate}">Date</td>
+		<td th:text="${txn.currency}">Currency</td>
+		<td th:text="${txn.message}">Message</td>
+		<td th:text="${txn.typeDescription}">Description</td>
+		<td th:text="${txn.creditorName}">Creditor</td>
+		<td th:text="${txn.debtorName}">Debtor</td>
+		
+	</tr>
+</table>
+
+</body>
+</html>

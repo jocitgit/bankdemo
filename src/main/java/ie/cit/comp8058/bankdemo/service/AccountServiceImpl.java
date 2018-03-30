@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
+import ie.cit.comp8058.bankdemo.entity.Transaction;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -92,6 +93,40 @@ public class AccountServiceImpl implements AccountService {
 			Account account = objectMapper.readValue(parser, Account.class);
 			
 			return account;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public Transaction[] getTransactionsByAccountId(String accessToken, String id) {
+		String accounts_uri = "https://api.nordeaopenbanking.com/v2/accounts/"+id+"/transactions";
+
+		HttpHeaders headers2 = new HttpHeaders();
+		headers2.setContentType(MediaType.APPLICATION_JSON);
+		headers2.add("Accept", "application/json");
+		headers2.add("Authorization", "Bearer " + accessToken);
+		headers2.add("X-IBM-Client-Id", clientId);
+		headers2.add("X-IBM-Client-Secret", clientSecret);
+
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers2);
+		
+		ResponseEntity<String> response = restTemplate.exchange(accounts_uri, HttpMethod.GET, entity, String.class);
+		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
+		//System.out.println(response.getBody());
+
+			
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		try {
+			JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
+			JsonParser parser = accountsNode.traverse();
+			Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
+			for (Transaction t : txns) {
+				//System.out.println(t);
+			}
+			return txns;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
