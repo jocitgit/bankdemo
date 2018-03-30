@@ -9,6 +9,7 @@
 	<tr th:each="account: ${accounts}">
 		<td th:text="${account._id}">Id</td>
 		<td th:text="${account.availableBalance}">Balance</td>
+		<td><a th:text="${account._id}" th:href="@{/accounts/__${account._id}__}">Id</a></td>
 	</tr>
 </table>
 
