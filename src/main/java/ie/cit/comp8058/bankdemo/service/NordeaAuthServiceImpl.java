@@ -45,7 +45,7 @@ public class NordeaAuthServiceImpl implements AuthService {
         if (state != STATE_CODE) {
         	//TODO - error handling & return
         }
-		
+        		
 		//POST request with headers
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
