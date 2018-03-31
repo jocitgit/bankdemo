@@ -10,7 +10,8 @@
 		<th>Id</th>
 		<th>Type</th>
 		<th>Amount</th>
-		<th>Date</th>
+		<th>Booking Date</th>
+		<th>Value Date</th>
 		<th>Currency</th>
 		<th>Message</th>
 		<th>Description</th>
@@ -21,7 +22,8 @@
 		<td th:text="${txn.transactionId}">Id</td>
 		<td th:text="${txn._type}">Type</td>
 		<td th:text="${txn.amount}">Amount</td>
-		<td th:text="${txn.bookingDate}">Date</td>
+		<td th:text="${txn.bookingDate}">Booking Date</td>
+		<td th:text="${txn.valueDate}">Value Date</td>
 		<td th:text="${txn.currency}">Currency</td>
 		<td th:text="${txn.message}">Message</td>
 		<td th:text="${txn.typeDescription}">Description</td>

@@ -11,6 +11,7 @@ public class Transaction {
 	private String _type; // CreditTransaction or DebitTransaction
 	private BigDecimal amount;
 	private String bookingDate;
+	private String valueDate;
 	private String currency;
 	private String message;
 	private String typeDescription; // e.g. ATM withdrawal
@@ -40,6 +41,12 @@ public class Transaction {
 	}
 	public void setBookingDate(String bookingDate) {
 		this.bookingDate = bookingDate;
+	}
+	public String getValueDate() {
+		return valueDate;
+	}
+	public void setValueDate(String bookingDate) {
+		this.valueDate = bookingDate;
 	}
 	public String getCurrency() {
 		return currency;
@@ -74,12 +81,9 @@ public class Transaction {
 	@Override
 	public String toString() {
 		return "Transaction [transactionId=" + transactionId + ", _type=" + _type + ", amount=" + amount
-				+ ", bookingDate=" + bookingDate + ", currency=" + currency + ", message=" + message
-				+ ", typeDescription=" + typeDescription + ", debtorName=" + debtorName + ", creditorName="
+				+ ", bookingDate=" + bookingDate + ", valueDate=" + valueDate + ", currency=" + currency + ", message="
+				+ message + ", typeDescription=" + typeDescription + ", debtorName=" + debtorName + ", creditorName="
 				+ creditorName + "]";
 	}
-	
-	
-	
-	
+		
 }

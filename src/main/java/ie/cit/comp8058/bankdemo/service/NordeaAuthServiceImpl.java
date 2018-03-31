@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import ie.cit.comp8058.bankdemo.entity.Token;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class NordeaAuthServiceImpl implements AuthService {
 	
 	@Autowired
 	RestTemplate restTemplate;
@@ -24,8 +24,8 @@ public class AuthServiceImpl implements AuthService {
 	@Value( "${CLIENT_SECRET}" )
 	private String clientSecret;
 	
-	@Value( "${ACCESS_URL}" )
-	private String uri;
+	@Value( "${BASE_AUTH_URI}" )
+	private String authUri;
 		
 	@Value( "${REDIRECT_URI}" )
 	private String redirectUri;
@@ -61,8 +61,8 @@ public class AuthServiceImpl implements AuthService {
 		//ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
 
 		
-		//get/postForObject/Entity throw RestClientException
-		
+		//TODO - get/postForObject/Entity throw RestClientException
+		String uri = authUri + "/access_token";
 		Token token = restTemplate.postForObject( uri, request , Token.class );
 		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
 		//System.out.println(response.getBody());
@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public String getLoginUri(boolean withUI) {
-		String uri = "https://api.nordeaopenbanking.com/v1/authentication?state=" + STATE_CODE + "&client_id=" + clientId + "&redirect_uri=" + redirectUri;
+		String uri = authUri + "?state=" + STATE_CODE + "&client_id=" + clientId + "&redirect_uri=" + redirectUri;
 		if (withUI) {
 			uri += "&X-Response-Scenarios=AuthenticationWithUI";
 		}
