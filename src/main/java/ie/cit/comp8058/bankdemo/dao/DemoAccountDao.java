@@ -28,4 +28,11 @@ public class DemoAccountDao implements AccountDao {
 		return null;
 	}
 
+	@Override
+	public Transaction[] getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
+			String toDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

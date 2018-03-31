@@ -11,4 +11,6 @@ public interface AccountDao {
 	
 	public Transaction[] getTransactionsByAccountId(String accessToken, String id);
 	
+	public Transaction[] getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate, String toDate);
+	
 }

@@ -135,5 +135,41 @@ public class NordeaAccountDao implements AccountDao {
 		}
 	}
 
+	@Override
+	public Transaction[] getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
+			String toDate) {
+		String uri = accountsUri + "/"+id+"/transactions";
+		uri += "?fromDate=" + fromDate + "&toDate=" + toDate;
+
+		HttpHeaders headers2 = new HttpHeaders();
+		headers2.setContentType(MediaType.APPLICATION_JSON);
+		headers2.add("Accept", "application/json");
+		headers2.add("Authorization", "Bearer " + accessToken);
+		headers2.add("X-IBM-Client-Id", clientId);
+		headers2.add("X-IBM-Client-Secret", clientSecret);
+
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers2);
+		
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
+		//System.out.println(response.getBody());
+
+			
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		try {
+			JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
+			JsonParser parser = accountsNode.traverse();
+			Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
+			for (Transaction t : txns) {
+				//System.out.println(t);
+			}
+			return txns;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 }

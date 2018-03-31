@@ -26,6 +26,12 @@ public class AccountServiceImpl implements AccountService {
 	public Transaction[] getTransactionsByAccountId(String accessToken, String id) {
 		return accountDao.getTransactionsByAccountId(accessToken, id);
 	}
+
+	@Override
+	public Transaction[] getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
+			String toDate) {
+		return accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
+	}
 	
 	
 	
