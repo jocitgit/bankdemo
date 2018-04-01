@@ -12,6 +12,7 @@
 		<td><a th:text="${account._id}" th:href="@{/accounts/__${account._id}__}">Id</a></td>
 	</tr>
 </table>
-
+<div th:replace="fragments/footer :: footer">
+	</div>
 </body>
 </html>

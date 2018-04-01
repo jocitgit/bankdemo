@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,9 +32,10 @@ public class GlobalExceptionHandlerController  {
 		}
 		
 		model.addAttribute("error", "HttpClientErrorException");
-		model.addAttribute("status", e.getMessage());
+		model.addAttribute("message", e.getMessage());
 		model.addAttribute("failureCode", failureCode);
 		model.addAttribute("failureDesc", failureDesc);
+		
 		return "error";
 	}
 	
