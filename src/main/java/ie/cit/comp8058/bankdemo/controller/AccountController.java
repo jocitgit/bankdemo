@@ -2,24 +2,21 @@ package ie.cit.comp8058.bankdemo.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import javax.validation.Valid;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import ie.cit.comp8058.bankdemo.entity.Account;
-import ie.cit.comp8058.bankdemo.entity.DateRange;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
 import ie.cit.comp8058.bankdemo.exception.ItemNotFoundException;
 import ie.cit.comp8058.bankdemo.service.AccountService;
@@ -32,10 +29,12 @@ public class AccountController {
 	
 	private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	
+	// Binds <input type=date> format 'yyyy'MM-dd to Date request parameter
 	@InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(DATE_FORMAT, true));
     }
+   
 	
 	@RequestMapping("/accounts")
 	public String getAccounts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
@@ -66,21 +65,28 @@ public class AccountController {
 	}
 	
 	@GetMapping("/accounts/{id}/transactions")
-	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, Model model) {
+	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, @RequestParam(value="fromDate", required=false) Date fromDate, @RequestParam(value="toDate", required=false) Date toDate, Model model) {
 		
-		Transaction[] txns = accountService.getTransactionsByAccountId(accessToken, id);
+		List<Transaction> txns;
+		
+		if (fromDate == null || toDate == null) {
+			txns = accountService.getTransactionsByAccountId(accessToken, id);
+		} else {
+			String txnFromDate = DATE_FORMAT.format(fromDate);
+			String txnToDate = DATE_FORMAT.format(toDate);
+			txns = accountService.getTransactionsByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate);
+		}
 		
 		if (txns != null) {
 			model.addAttribute("txns", txns);
 			model.addAttribute("accountId", id);
-			model.addAttribute("dateRange", new DateRange());
 			return "txnList";
 		} else {
 			throw new ItemNotFoundException();
 		}
 		
 	}
-	
+	/*
 	@PostMapping("/accounts/{id}/transactions")
 	public String postTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, @Valid @ModelAttribute DateRange dateRange, BindingResult bindingResult, Model model) {
 		
@@ -116,4 +122,5 @@ public class AccountController {
 		}
 		
 	}
+	*/
 }

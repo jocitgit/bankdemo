@@ -1,5 +1,7 @@
 package ie.cit.comp8058.bankdemo.dao;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -23,13 +25,13 @@ public class DemoAccountDao implements AccountDao {
 	}
 
 	@Override
-	public Transaction[] getTransactionsByAccountId(String accessToken, String id) {
+	public List<Transaction> getTransactionsByAccountId(String accessToken, String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Transaction[] getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
+	public List<Transaction> getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
 			String toDate) {
 		// TODO Auto-generated method stub
 		return null;

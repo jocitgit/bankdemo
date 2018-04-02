@@ -1,6 +1,8 @@
 package ie.cit.comp8058.bankdemo.dao;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -102,7 +105,7 @@ public class NordeaAccountDao implements AccountDao {
 	}
 
 	@Override
-	public Transaction[] getTransactionsByAccountId(String accessToken, String id) {
+	public List<Transaction> getTransactionsByAccountId(String accessToken, String id) {
 		String uri = accountsUri + "/"+id+"/transactions";
 
 		HttpHeaders headers2 = new HttpHeaders();
@@ -118,16 +121,19 @@ public class NordeaAccountDao implements AccountDao {
 		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
 		//System.out.println(response.getBody());
 
-			
+		ArrayList<Transaction> txns = new ArrayList<Transaction>();
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		try {
-			JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
-			JsonParser parser = accountsNode.traverse();
-			Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
-			for (Transaction t : txns) {
-				//System.out.println(t);
-			}
+			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
+			String continuationKey = responseNode.path("_continuationKey").asText();
+			System.out.println(continuationKey);
+			//JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
+			JsonParser parser = responseNode.path("transactions").traverse();
+			//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
+			txns = objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){});
+	
 			return txns;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -136,7 +142,7 @@ public class NordeaAccountDao implements AccountDao {
 	}
 
 	@Override
-	public Transaction[] getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
+	public List<Transaction> getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
 			String toDate) {
 		String uri = accountsUri + "/"+id+"/transactions";
 		uri += "?fromDate=" + fromDate + "&toDate=" + toDate;
@@ -154,16 +160,19 @@ public class NordeaAccountDao implements AccountDao {
 		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
 		System.out.println(response.getBody());
 
-			
+		ArrayList<Transaction> txns = new ArrayList<Transaction>();
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		
 		try {
-			JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
-			JsonParser parser = accountsNode.traverse();
-			Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
-			for (Transaction t : txns) {
-				//System.out.println(t);
-			}
+			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
+			String continuationKey = responseNode.path("_continuationKey").asText();
+			System.out.println(continuationKey);
+			//JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
+			JsonParser parser = responseNode.path("transactions").traverse();
+			//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
+			txns = objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){});
+			
 			return txns;
 		} catch (IOException e) {
 			e.printStackTrace();

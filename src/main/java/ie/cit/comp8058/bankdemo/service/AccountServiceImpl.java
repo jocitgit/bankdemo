@@ -2,6 +2,8 @@ package ie.cit.comp8058.bankdemo.service;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import ie.cit.comp8058.bankdemo.dao.AccountDao;
 import ie.cit.comp8058.bankdemo.entity.Account;
@@ -23,12 +25,12 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Transaction[] getTransactionsByAccountId(String accessToken, String id) {
+	public List<Transaction> getTransactionsByAccountId(String accessToken, String id) {
 		return accountDao.getTransactionsByAccountId(accessToken, id);
 	}
 
 	@Override
-	public Transaction[] getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
+	public List<Transaction> getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
 			String toDate) {
 		return accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
 	}

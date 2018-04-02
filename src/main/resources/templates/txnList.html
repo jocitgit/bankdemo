@@ -5,6 +5,8 @@
 <body>
 	<div th:replace="fragments/header:: header"></div>
 	<h1 th:text="#{txn.list.title}">Default Title</h1>
+	
+	<!-- 
 	<form id="filterTxnsForm" action="#"
 		th:action="@{/accounts/__${accountId}__/transactions}"
 		th:object="${dateRange}" method="post">
@@ -14,6 +16,17 @@
 		<input type="date" name="toDate" th:field="*{toDate}" />
 		<button type="submit" name="filter">Filter</button>
 	</form>
+	-->
+	<form id="filterTxnsForm" action="#"
+		th:action="@{/accounts/__${accountId}__/transactions}" method="get">
+
+		<label for="fromDate">Date From:</label> 
+		<input type="date" name="fromDate" required /> 
+		<label for="toDate">To:</label>
+		<input type="date" name="toDate" required />
+		<button type="submit">Filter</button>
+	</form>
+	
 	<a th:href="@{/accounts/__${accountId}__/transactions}">Clear Filter</a>
 	<table>
 		<tr>
