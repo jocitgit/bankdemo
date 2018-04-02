@@ -152,7 +152,7 @@ public class NordeaAccountDao implements AccountDao {
 		
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
-		//System.out.println(response.getBody());
+		System.out.println(response.getBody());
 
 			
 		ObjectMapper objectMapper = new ObjectMapper();

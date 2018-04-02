@@ -91,15 +91,19 @@ public class AccountController {
             return "txnList";
         }
 		
-		//TODO - check for NULL dates
+		if (dateRange.getFromDate() == null) {
+			dateRange.setFromDate(new Date());
+		}
 		
-		//String fromDate = "2018-03-31";
-		//String toDate = "2018-04-05";
+		if (dateRange.getToDate() == null) {
+			dateRange.setToDate(new Date());
+		}
+		
 		String fromDate = DATE_FORMAT.format(dateRange.getFromDate());
 		String toDate = DATE_FORMAT.format(dateRange.getToDate());
 		
-		System.out.println("From: " + fromDate);
-		System.out.println("To: " + toDate);
+		//System.out.println("From: " + fromDate);
+		//System.out.println("To: " + toDate);
 		
 		Transaction[] txns = accountService.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
 		
