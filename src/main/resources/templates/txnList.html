@@ -5,37 +5,43 @@
 <body>
 	<div th:replace="fragments/header:: header"></div>
 	<h1 th:text="#{txn.list.title}">Default Title</h1>
-<table>
-	<tr>
-		<th>Id</th>
-		<th>Type</th>
-		<th>Amount</th>
-		<th>Booking Date</th>
-		<th>Value Date</th>
-		<th>Currency</th>
-		<th>Message</th>
-		<th>Description</th>
-		<th>Creditor</th>
-		<th>Debtor</th>
-	</tr>
-	<tr th:each="txn: ${txns}">
-		<td th:text="${txn.transactionId}">Id</td>
-		<td th:text="${txn._type}">Type</td>
-		<td th:text="${txn.amount}">Amount</td>
-		<td th:text="${txn.bookingDate}">Booking Date</td>
-		<td th:text="${txn.valueDate}">Value Date</td>
-		<td th:text="${txn.currency}">Currency</td>
-		<td th:text="${txn.message}">Message</td>
-		<td th:text="${txn.typeDescription}">Description</td>
-		<td th:text="${txn.creditorName}">Creditor</td>
-		<td th:text="${txn.debtorName}">Debtor</td>
-		
-	</tr>
-</table>
-<form>
+	<form id="filterTxnsForm" action="#"
+		th:action="@{/accounts/__${accountId}__/transactions}"
+		th:object="${dateRange}" method="post">
 
-</form>
-<div th:replace="fragments/footer :: footer">
-	</div>
+		<label for="fromDate">Date From:</label> <input type="date"
+			name="fromDate" th:field="*{fromDate}" /> <label for="toDate">To:</label>
+		<input type="date" name="toDate" th:field="*{toDate}" />
+		<button type="submit" name="filter">Filter</button>
+	</form>
+	<table>
+		<tr>
+			<th>Id</th>
+			<th>Type</th>
+			<th>Amount</th>
+			<th>Booking Date</th>
+			<th>Value Date</th>
+			<th>Currency</th>
+			<th>Message</th>
+			<th>Description</th>
+			<th>Creditor</th>
+			<th>Debtor</th>
+		</tr>
+		<tr th:each="txn: ${txns}">
+			<td th:text="${txn.transactionId}">Id</td>
+			<td th:text="${txn._type}">Type</td>
+			<td th:text="${txn.amount}">Amount</td>
+			<td th:text="${txn.bookingDate}">Booking Date</td>
+			<td th:text="${txn.valueDate}">Value Date</td>
+			<td th:text="${txn.currency}">Currency</td>
+			<td th:text="${txn.message}">Message</td>
+			<td th:text="${txn.typeDescription}">Description</td>
+			<td th:text="${txn.creditorName}">Creditor</td>
+			<td th:text="${txn.debtorName}">Debtor</td>
+
+		</tr>
+	</table>
+
+	<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
