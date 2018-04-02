@@ -167,7 +167,8 @@ public class NordeaAccountDao implements AccountDao {
 		try {
 			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
 			String continuationKey = responseNode.path("_continuationKey").asText();
-			System.out.println(continuationKey);
+			
+			System.out.println("key(" + continuationKey + ")");
 			//JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
 			JsonParser parser = responseNode.path("transactions").traverse();
 			//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);

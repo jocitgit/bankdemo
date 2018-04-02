@@ -5,56 +5,52 @@
 <body>
 	<div th:replace="fragments/header:: header"></div>
 	<h1 th:text="#{txn.list.title}">Default Title</h1>
-	
-	<!-- 
-	<form id="filterTxnsForm" action="#"
-		th:action="@{/accounts/__${accountId}__/transactions}"
-		th:object="${dateRange}" method="post">
 
-		<label for="fromDate">Date From:</label> <input type="date"
-			name="fromDate" th:field="*{fromDate}" /> <label for="toDate">To:</label>
-		<input type="date" name="toDate" th:field="*{toDate}" />
-		<button type="submit" name="filter">Filter</button>
-	</form>
-	-->
 	<form id="filterTxnsForm" action="#"
 		th:action="@{/accounts/__${accountId}__/transactions}" method="get">
 
-		<label for="fromDate">Date From:</label> 
-		<input type="date" name="fromDate" required /> 
-		<label for="toDate">To:</label>
-		<input type="date" name="toDate" required />
+		<label for="fromDate">Date From:</label> <input type="date"
+			name="fromDate" th:value="${fromDate}" required /> <label
+			for="toDate">To:</label> <input type="date" name="toDate"
+			th:value="${toDate}" required />
 		<button type="submit">Filter</button>
 	</form>
-	
-	<a th:href="@{/accounts/__${accountId}__/transactions}">Clear Filter</a>
-	<table>
-		<tr>
-			<th>Id</th>
-			<th>Type</th>
-			<th>Amount</th>
-			<th>Booking Date</th>
-			<th>Value Date</th>
-			<th>Currency</th>
-			<th>Message</th>
-			<th>Description</th>
-			<th>Creditor</th>
-			<th>Debtor</th>
-		</tr>
-		<tr th:each="txn: ${txns}">
-			<td th:text="${txn.transactionId}">Id</td>
-			<td th:text="${txn._type}">Type</td>
-			<td th:text="${txn.amount}">Amount</td>
-			<td th:text="${txn.bookingDate}">Booking Date</td>
-			<td th:text="${txn.valueDate}">Value Date</td>
-			<td th:text="${txn.currency}">Currency</td>
-			<td th:text="${txn.message}">Message</td>
-			<td th:text="${txn.typeDescription}">Description</td>
-			<td th:text="${txn.creditorName}">Creditor</td>
-			<td th:text="${txn.debtorName}">Debtor</td>
+	<a th:href="@{/accounts/__${accountId}__/transactions}">Clear
+		Filter</a>
+	<div th:if="${#lists.isEmpty(txns)}">
+		<p>No transactions to display</p>
+	</div>
 
-		</tr>
-	</table>
+	<div th:unless="${#lists.isEmpty(txns)}">
+
+		<table>
+			<tr>
+				<th>Id</th>
+				<th>Type</th>
+				<th>Amount</th>
+				<th>Booking Date</th>
+				<th>Value Date</th>
+				<th>Currency</th>
+				<th>Message</th>
+				<th>Description</th>
+				<th>Creditor</th>
+				<th>Debtor</th>
+			</tr>
+			<tr th:each="txn: ${txns}">
+				<td th:text="${txn.transactionId}">Id</td>
+				<td th:text="${txn._type}">Type</td>
+				<td th:text="${txn.amount}">Amount</td>
+				<td th:text="${txn.bookingDate}">Booking Date</td>
+				<td th:text="${txn.valueDate}">Value Date</td>
+				<td th:text="${txn.currency}">Currency</td>
+				<td th:text="${txn.message}">Message</td>
+				<td th:text="${txn.typeDescription}">Description</td>
+				<td th:text="${txn.creditorName}">Creditor</td>
+				<td th:text="${txn.debtorName}">Debtor</td>
+
+			</tr>
+		</table>
+	</div>
 
 	<div th:replace="fragments/footer :: footer"></div>
 </body>

@@ -68,18 +68,22 @@ public class AccountController {
 	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, @RequestParam(value="fromDate", required=false) Date fromDate, @RequestParam(value="toDate", required=false) Date toDate, Model model) {
 		
 		List<Transaction> txns;
+		String txnFromDate = "";
+		String txnToDate = "";
 		
 		if (fromDate == null || toDate == null) {
 			txns = accountService.getTransactionsByAccountId(accessToken, id);
 		} else {
-			String txnFromDate = DATE_FORMAT.format(fromDate);
-			String txnToDate = DATE_FORMAT.format(toDate);
+			txnFromDate = DATE_FORMAT.format(fromDate);
+			txnToDate = DATE_FORMAT.format(toDate);
 			txns = accountService.getTransactionsByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate);
 		}
 		
 		if (txns != null) {
 			model.addAttribute("txns", txns);
 			model.addAttribute("accountId", id);
+			model.addAttribute("fromDate", txnFromDate);
+			model.addAttribute("toDate", txnToDate);
 			return "txnList";
 		} else {
 			throw new ItemNotFoundException();
