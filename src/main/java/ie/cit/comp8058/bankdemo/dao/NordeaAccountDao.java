@@ -116,34 +116,41 @@ public class NordeaAccountDao implements AccountDao {
 		headers2.add("X-IBM-Client-Secret", clientSecret);
 
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers2);
-		
-		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
-		//System.out.println(response.getBody());
 
+		String nextUri = uri;
+		ResponseEntity<String> response;
+		JsonNode responseNode;
+		JsonParser parser;
 		ArrayList<Transaction> txns = new ArrayList<Transaction>();
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		
-		try {
-			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
-			String continuationKey = responseNode.path("_continuationKey").asText();
-			System.out.println(continuationKey);
-			//JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
-			JsonParser parser = responseNode.path("transactions").traverse();
-			//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
-			txns = objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){});
-	
-			return txns;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		String continuationKey = "";
+		ObjectMapper objectMapper = new ObjectMapper();		
+
+		do {
+			response = restTemplate.exchange(nextUri, HttpMethod.GET, entity, String.class);
+			//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
+			//System.out.println(response.getBody());
+
+			try {
+				responseNode = objectMapper.readTree(response.getBody()).path("response"); 
+				continuationKey = responseNode.path("_continuationKey").asText();
+				System.out.println("key(" + continuationKey + ")");
+				nextUri = uri + "?continuationKey=" + continuationKey;
+				parser = responseNode.path("transactions").traverse();
+				//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
+				txns.addAll(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+		} while (!continuationKey.isEmpty());
+		return txns;
 	}
 
 	@Override
 	public List<Transaction> getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
 			String toDate) {
+		
 		String uri = accountsUri + "/"+id+"/transactions";
 		uri += "?fromDate=" + fromDate + "&toDate=" + toDate;
 
@@ -156,29 +163,37 @@ public class NordeaAccountDao implements AccountDao {
 
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers2);
 		
-		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
-		System.out.println(response.getBody());
-
+		String nextUri = uri;
+		ResponseEntity<String> response;
+		JsonNode responseNode;
+		JsonParser parser;
 		ArrayList<Transaction> txns = new ArrayList<Transaction>();
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		
-		try {
-			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
-			String continuationKey = responseNode.path("_continuationKey").asText();
+		String continuationKey = "";
+		ObjectMapper objectMapper = new ObjectMapper();		
+
+
+		do {
 			
-			System.out.println("key(" + continuationKey + ")");
-			//JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("transactions");
-			JsonParser parser = responseNode.path("transactions").traverse();
-			//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
-			txns = objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){});
-			
-			return txns;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+			response = restTemplate.exchange(nextUri, HttpMethod.GET, entity, String.class);
+
+			try {
+				responseNode = objectMapper.readTree(response.getBody()).path("response"); 
+				continuationKey = responseNode.path("_continuationKey").asText();
+				System.out.println("key(" + continuationKey + ")");
+				nextUri = uri + "&continuationKey=" + continuationKey;
+				
+				parser = responseNode.path("transactions").traverse();
+				//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
+				txns.addAll(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+
+		} while (!continuationKey.isEmpty());
+
+		return txns;
 	}
 
 
