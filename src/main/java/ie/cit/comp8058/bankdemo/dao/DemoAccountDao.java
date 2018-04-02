@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
+import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 
 @Repository
 @Profile("demo")
@@ -33,6 +34,19 @@ public class DemoAccountDao implements AccountDao {
 	@Override
 	public List<Transaction> getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate,
 			String toDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TransactionPage getTransactionPageByAccountId(String accessToken, String id, String continuationKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TransactionPage getTransactionPageByAccountIdAndDate(String accessToken, String id, String fromDate,
+			String toDate, String continuationKey) {
 		// TODO Auto-generated method stub
 		return null;
 	}

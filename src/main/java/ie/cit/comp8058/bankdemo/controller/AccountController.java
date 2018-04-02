@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
+import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 import ie.cit.comp8058.bankdemo.exception.ItemNotFoundException;
 import ie.cit.comp8058.bankdemo.service.AccountService;
 
@@ -65,22 +66,43 @@ public class AccountController {
 	}
 	
 	@GetMapping("/accounts/{id}/transactions")
-	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, @RequestParam(value="fromDate", required=false) Date fromDate, @RequestParam(value="toDate", required=false) Date toDate, Model model) {
+	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, @RequestParam(value="fromDate", required=false) Date fromDate, @RequestParam(value="toDate", required=false) Date toDate, @RequestParam(value="continuationKey", required=false) String continuationKey, Model model) {
 		
-		List<Transaction> txns;
+		TransactionPage txnPage;
 		String txnFromDate = "";
 		String txnToDate = "";
+		String previousKey = "";
 		
 		if (fromDate == null || toDate == null) {
-			txns = accountService.getTransactionsByAccountId(accessToken, id);
+			txnPage = accountService.getTransactionPageByAccountId(accessToken, id, continuationKey);
 		} else {
 			txnFromDate = DATE_FORMAT.format(fromDate);
 			txnToDate = DATE_FORMAT.format(toDate);
-			txns = accountService.getTransactionsByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate);
+			txnPage = accountService.getTransactionPageByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate, continuationKey);
 		}
 		
-		if (txns != null) {
-			model.addAttribute("txns", txns);
+		if (continuationKey!=null) {
+			int separatorIndex = continuationKey.indexOf("-");
+			if (separatorIndex > 0) {
+				String keyBase = continuationKey.substring(0, separatorIndex+1);
+				System.out.println("base: " + keyBase);
+				try {
+					int pageNumber = Integer.parseInt(continuationKey.substring(separatorIndex+1));
+					if (pageNumber > 2) { // no key required for page 1 data
+						previousKey = keyBase + (pageNumber-1);
+					}
+				} catch (NumberFormatException e) {
+					// do not update previousKey
+				}
+			}
+		}
+		System.out.println("PrevKey: " + previousKey);
+		
+		if (txnPage != null) {
+			model.addAttribute("txns", txnPage.getTransactions());	
+			model.addAttribute("currentKey", continuationKey);
+			model.addAttribute("previousKey", previousKey);
+			model.addAttribute("nextKey", txnPage.getContinuationKey());
 			model.addAttribute("accountId", id);
 			model.addAttribute("fromDate", txnFromDate);
 			model.addAttribute("toDate", txnToDate);

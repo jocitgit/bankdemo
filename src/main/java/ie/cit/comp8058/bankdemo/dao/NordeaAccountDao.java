@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
+import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 
 @Repository
 @Profile("!demo")
@@ -103,6 +104,82 @@ public class NordeaAccountDao implements AccountDao {
 			return null;
 		}
 	}
+	
+	@Override
+	public TransactionPage getTransactionPageByAccountId(String accessToken, String id, String continuationKey) {
+		String uri = accountsUri + "/" + id + "/transactions";
+		
+		if ((continuationKey != null) && !(continuationKey.isEmpty())) {
+			uri += "?continuationKey=" + continuationKey;
+		}
+
+		System.out.println(uri);
+		
+		HttpHeaders headers2 = new HttpHeaders();
+		headers2.setContentType(MediaType.APPLICATION_JSON);
+		headers2.add("Accept", "application/json");
+		headers2.add("Authorization", "Bearer " + accessToken);
+		headers2.add("X-IBM-Client-Id", clientId);
+		headers2.add("X-IBM-Client-Secret", clientSecret);
+
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers2);
+		
+		TransactionPage txnPage = new TransactionPage();
+		ObjectMapper objectMapper = new ObjectMapper();		
+		
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+		try {
+			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
+			txnPage.setContinuationKey(responseNode.path("_continuationKey").asText());
+			JsonParser parser = responseNode.path("transactions").traverse();
+			txnPage.setTransactions(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return txnPage;
+	}
+	
+	@Override
+	public TransactionPage getTransactionPageByAccountIdAndDate(String accessToken, String id, String fromDate, String toDate, String continuationKey) {
+		String uri = accountsUri + "/"+id+"/transactions";
+		uri += "?fromDate=" + fromDate + "&toDate=" + toDate;
+		if ((continuationKey != null) && !(continuationKey.isEmpty())) {
+			uri += "&continuationKey=" + continuationKey;
+		}
+
+		System.out.println(uri);
+		
+		HttpHeaders headers2 = new HttpHeaders();
+		headers2.setContentType(MediaType.APPLICATION_JSON);
+		headers2.add("Accept", "application/json");
+		headers2.add("Authorization", "Bearer " + accessToken);
+		headers2.add("X-IBM-Client-Id", clientId);
+		headers2.add("X-IBM-Client-Secret", clientSecret);
+
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers2);
+		
+		TransactionPage txnPage = new TransactionPage();
+		ObjectMapper objectMapper = new ObjectMapper();		
+		
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+		try {
+			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
+			txnPage.setContinuationKey(responseNode.path("_continuationKey").asText());
+			System.out.println("key(" + continuationKey + ")");
+			JsonParser parser = responseNode.path("transactions").traverse();
+			txnPage.setTransactions(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return txnPage;
+	}
+
 
 	@Override
 	public List<Transaction> getTransactionsByAccountId(String accessToken, String id) {

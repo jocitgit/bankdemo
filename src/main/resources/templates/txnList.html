@@ -50,6 +50,11 @@
 
 			</tr>
 		</table>
+		
+		<p>PreviousKey: <a th:unless="${currentKey == null || currentKey == ''}" th:text=Previous th:href="@{/accounts/__${accountId}__/transactions?fromDate=__${fromDate}__&toDate=__${toDate}__&continuationKey=__${previousKey}__}">Previous</a></p>
+		<p>CurrentKey: <span th:text="${currentKey}"></span></p>
+		<p>NextKey: <a th:unless="${nextKey ==  ''}" th:text=Next th:href="@{/accounts/__${accountId}__/transactions?fromDate=__${fromDate}__&toDate=__${toDate}__&continuationKey=__${nextKey}__}">Next</a></p>
+		
 	</div>
 
 	<div th:replace="fragments/footer :: footer"></div>

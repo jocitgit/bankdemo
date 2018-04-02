@@ -4,7 +4,7 @@ import ie.cit.comp8058.bankdemo.entity.Token;
 
 public interface AuthService {
 
-	public Token getAccessToken(String code, String state);
+	Token getAccessToken(String code, String state);
 	
-	public String getLoginUri(boolean withUI);
+	String getLoginUri(boolean withUI);
 }

@@ -4,15 +4,21 @@ import java.util.List;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
+import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 
 public interface AccountService {
 
-	public Account[] getAllAccounts(String accessToken);
+	Account[] getAllAccounts(String accessToken);
 	
-	public Account getAccountById(String accessToken, String id);
+	Account getAccountById(String accessToken, String id);
 	
-	public List<Transaction> getTransactionsByAccountId(String accessToken, String id);
+	List<Transaction> getTransactionsByAccountId(String accessToken, String id);
 	
-	public List<Transaction> getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate, String toDate);
+	List<Transaction> getTransactionsByAccountIdAndDate(String accessToken, String id, String fromDate, String toDate);
+
+	TransactionPage getTransactionPageByAccountId(String accessToken, String id, String continuationKey);
+
+	TransactionPage getTransactionPageByAccountIdAndDate(String accessToken, String id, String txnFromDate,
+			String txnToDate, String continuationKey);
 	
 }
