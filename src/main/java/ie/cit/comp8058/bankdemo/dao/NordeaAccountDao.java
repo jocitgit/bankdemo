@@ -107,13 +107,30 @@ public class NordeaAccountDao implements AccountDao {
 	
 	@Override
 	public TransactionPage getTransactionPageByAccountId(String accessToken, String id, String continuationKey) {
+		
+		String previousKey = "";
+		
 		String uri = accountsUri + "/" + id + "/transactions";
 		
 		if ((continuationKey != null) && !(continuationKey.isEmpty())) {
 			uri += "?continuationKey=" + continuationKey;
+			
+			int separatorIndex = continuationKey.indexOf("-");
+			if (separatorIndex > 0) {
+				String keyBase = continuationKey.substring(0, separatorIndex+1);
+				//System.out.println("base: " + keyBase);
+				try {
+					int pageNumber = Integer.parseInt(continuationKey.substring(separatorIndex+1));
+					if (pageNumber > 2) { // no key required for page 1 data
+						previousKey = keyBase + (pageNumber-1);
+					}
+				} catch (NumberFormatException e) {
+					// do not update previousKey
+				}
+			}
 		}
 
-		System.out.println(uri);
+		//System.out.println(uri);
 		
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.setContentType(MediaType.APPLICATION_JSON);
@@ -130,10 +147,10 @@ public class NordeaAccountDao implements AccountDao {
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 		try {
 			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
-			txnPage.setContinuationKey(responseNode.path("_continuationKey").asText());
+			txnPage.setNextKey(responseNode.path("_continuationKey").asText());
 			JsonParser parser = responseNode.path("transactions").traverse();
 			txnPage.setTransactions(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
-
+			txnPage.setPreviousKey(previousKey);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -144,13 +161,31 @@ public class NordeaAccountDao implements AccountDao {
 	
 	@Override
 	public TransactionPage getTransactionPageByAccountIdAndDate(String accessToken, String id, String fromDate, String toDate, String continuationKey) {
+		
+		String previousKey = "";
+		
 		String uri = accountsUri + "/"+id+"/transactions";
 		uri += "?fromDate=" + fromDate + "&toDate=" + toDate;
+		
 		if ((continuationKey != null) && !(continuationKey.isEmpty())) {
 			uri += "&continuationKey=" + continuationKey;
+			
+			int separatorIndex = continuationKey.indexOf("-");
+			if (separatorIndex > 0) {
+				String keyBase = continuationKey.substring(0, separatorIndex+1);
+				//System.out.println("base: " + keyBase);
+				try {
+					int pageNumber = Integer.parseInt(continuationKey.substring(separatorIndex+1));
+					if (pageNumber > 2) { // no key required for page 1 data
+						previousKey = keyBase + (pageNumber-1);
+					}
+				} catch (NumberFormatException e) {
+					// do not update previousKey
+				}
+			}
 		}
 
-		System.out.println(uri);
+		//System.out.println(uri);
 		
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.setContentType(MediaType.APPLICATION_JSON);
@@ -167,11 +202,11 @@ public class NordeaAccountDao implements AccountDao {
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 		try {
 			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
-			txnPage.setContinuationKey(responseNode.path("_continuationKey").asText());
-			System.out.println("key(" + continuationKey + ")");
+			txnPage.setNextKey(responseNode.path("_continuationKey").asText());
+			//System.out.println("key(" + continuationKey + ")");
 			JsonParser parser = responseNode.path("transactions").traverse();
 			txnPage.setTransactions(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
-
+			txnPage.setPreviousKey(previousKey);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -210,7 +245,7 @@ public class NordeaAccountDao implements AccountDao {
 			try {
 				responseNode = objectMapper.readTree(response.getBody()).path("response"); 
 				continuationKey = responseNode.path("_continuationKey").asText();
-				System.out.println("key(" + continuationKey + ")");
+				//System.out.println("key(" + continuationKey + ")");
 				nextUri = uri + "?continuationKey=" + continuationKey;
 				parser = responseNode.path("transactions").traverse();
 				//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
@@ -256,7 +291,7 @@ public class NordeaAccountDao implements AccountDao {
 			try {
 				responseNode = objectMapper.readTree(response.getBody()).path("response"); 
 				continuationKey = responseNode.path("_continuationKey").asText();
-				System.out.println("key(" + continuationKey + ")");
+				//System.out.println("key(" + continuationKey + ")");
 				nextUri = uri + "&continuationKey=" + continuationKey;
 				
 				parser = responseNode.path("transactions").traverse();

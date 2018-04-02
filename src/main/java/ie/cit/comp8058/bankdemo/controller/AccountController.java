@@ -71,7 +71,7 @@ public class AccountController {
 		TransactionPage txnPage;
 		String txnFromDate = "";
 		String txnToDate = "";
-		String previousKey = "";
+		//String previousKey = "";
 		
 		if (fromDate == null || toDate == null) {
 			txnPage = accountService.getTransactionPageByAccountId(accessToken, id, continuationKey);
@@ -81,28 +81,14 @@ public class AccountController {
 			txnPage = accountService.getTransactionPageByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate, continuationKey);
 		}
 		
-		if (continuationKey!=null) {
-			int separatorIndex = continuationKey.indexOf("-");
-			if (separatorIndex > 0) {
-				String keyBase = continuationKey.substring(0, separatorIndex+1);
-				System.out.println("base: " + keyBase);
-				try {
-					int pageNumber = Integer.parseInt(continuationKey.substring(separatorIndex+1));
-					if (pageNumber > 2) { // no key required for page 1 data
-						previousKey = keyBase + (pageNumber-1);
-					}
-				} catch (NumberFormatException e) {
-					// do not update previousKey
-				}
-			}
-		}
-		System.out.println("PrevKey: " + previousKey);
+		
+		//System.out.println("PrevKey: " + previousKey);
 		
 		if (txnPage != null) {
 			model.addAttribute("txns", txnPage.getTransactions());	
 			model.addAttribute("currentKey", continuationKey);
-			model.addAttribute("previousKey", previousKey);
-			model.addAttribute("nextKey", txnPage.getContinuationKey());
+			model.addAttribute("previousKey", txnPage.getPreviousKey());
+			model.addAttribute("nextKey", txnPage.getNextKey());
 			model.addAttribute("accountId", id);
 			model.addAttribute("fromDate", txnFromDate);
 			model.addAttribute("toDate", txnToDate);
@@ -112,41 +98,5 @@ public class AccountController {
 		}
 		
 	}
-	/*
-	@PostMapping("/accounts/{id}/transactions")
-	public String postTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, @Valid @ModelAttribute DateRange dateRange, BindingResult bindingResult, Model model) {
-		
-		System.out.println(dateRange);
-		
-		if (bindingResult.hasErrors() || dateRange == null) {
-			//System.out.println("binding error");
-            return "txnList";
-        }
-		
-		if (dateRange.getFromDate() == null) {
-			dateRange.setFromDate(new Date());
-		}
-		
-		if (dateRange.getToDate() == null) {
-			dateRange.setToDate(new Date());
-		}
-		
-		String fromDate = DATE_FORMAT.format(dateRange.getFromDate());
-		String toDate = DATE_FORMAT.format(dateRange.getToDate());
-		
-		//System.out.println("From: " + fromDate);
-		//System.out.println("To: " + toDate);
-		
-		Transaction[] txns = accountService.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
-		
-		if (txns != null) {
-			model.addAttribute("txns", txns);
-			model.addAttribute("accountId", id);
-			return "txnList";
-		} else {
-			throw new ItemNotFoundException();
-		}
-		
-	}
-	*/
+	
 }
