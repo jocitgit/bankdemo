@@ -65,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				
-		if (fromDate == null || toDate == null ) {
+		if (fromDate.isEmpty() || toDate.isEmpty() ) {
 			txns = accountDao.getTransactionsByAccountId(accessToken, id);
 		} else {
 			txns = accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);

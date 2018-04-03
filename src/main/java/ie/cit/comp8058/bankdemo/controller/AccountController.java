@@ -122,16 +122,36 @@ public class AccountController {
 		
 	}
 	
-	@GetMapping("/accounts/{id}/totals")
-	public String getTotals(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, Model model) {
+
 	
-/////////////////////////
-String fromDate = "2018-01-01";
-String toDate = "2018-04-30";
-String groupBy = "month";
-//////////////////////////////
-		List<TransactionTotal> totals = accountService.getTransactionTotals(accessToken, id, fromDate, toDate, groupBy);
+	@GetMapping("/accounts/{id}/totals")
+	public String getTotals(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id, 
+			@RequestParam(value="groupBy", required=false) String groupBy, 
+			@RequestParam(value="fromDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, 
+			@RequestParam(value="toDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate, 
+			Model model) {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String txnFromDate = "";
+		String txnToDate = "";
+		
+		if (fromDate != null && toDate != null) {
+			txnFromDate = fromDate.format(formatter);
+			txnToDate = toDate.format(formatter);
+		} 
+		
+		if (groupBy == null || groupBy.isEmpty()) {
+			groupBy = "month"; //default
+		}
+
+		List<TransactionTotal> totals = accountService.getTransactionTotals(accessToken, id, txnFromDate, txnToDate, groupBy);
+		model.addAttribute("accountId", id);
+		model.addAttribute("fromDate", txnFromDate);
+		model.addAttribute("toDate", txnToDate);
+		model.addAttribute("groupBy", groupBy);
 		model.addAttribute("totals", totals);
+		
 		return "txnTotals";
 	}
 }

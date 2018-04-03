@@ -6,6 +6,24 @@
 	<h1 th:text="#{txn.totals.title}">Default Title</h1>
 
 
+	<p>Set Date Range: </p>
+
+	<form id="totalsFilterForm" action="#"
+		th:action="@{/accounts/__${accountId}__/totals}" method="get">
+
+		<label for="fromDate">Date From:</label> 
+		<input type="date" name="fromDate" th:value="${fromDate}" required /> 
+		<label for="toDate">To:</label> 
+		<input type="date" name="toDate" th:value="${toDate}" required />
+		<label for="groupBy">Group By:</label> 
+		<select name="groupBy">
+			<option value="day">Day</option>
+			<option value="week">Week</option>
+			<option value="month">Month</option>
+		</select>
+		<button type="submit">Filter</button>
+	</form>
+			
 	<div th:if="${#lists.isEmpty(totals)}">
 		<p>No transactions to display</p>
 	</div>
