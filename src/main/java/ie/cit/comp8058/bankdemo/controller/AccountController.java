@@ -1,11 +1,14 @@
 package ie.cit.comp8058.bankdemo.controller;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,14 +31,13 @@ public class AccountController {
 	@Autowired
 	AccountService accountService;
 	
-	private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-	
+	/*
 	// Binds <input type=date> format 'yyyy'MM-dd to Date request parameter
 	@InitBinder
     public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(Date.class, new CustomDateEditor(DATE_FORMAT, true));
+       binder.registerCustomEditor(Date.class, new CustomDateEditor(DATE_FORMAT, true));
     }
-   
+   */
 	
 	@RequestMapping("/accounts")
 	public String getAccounts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
@@ -66,18 +68,44 @@ public class AccountController {
 	}
 	
 	@GetMapping("/accounts/{id}/transactions")
-	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, @RequestParam(value="fromDate", required=false) Date fromDate, @RequestParam(value="toDate", required=false) Date toDate, @RequestParam(value="continuationKey", required=false) String continuationKey, Model model) {
+	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id, 
+			@RequestParam(value="dateFilter", required=false) String dateFilter, 
+			@RequestParam(value="fromDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, 
+			@RequestParam(value="toDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate, 
+			@RequestParam(value="continuationKey", required=false) String continuationKey, 
+			Model model) {
 		
 		TransactionPage txnPage;
 		String txnFromDate = "";
 		String txnToDate = "";
-		//String previousKey = "";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		
+		if (dateFilter != null) {
+			toDate = LocalDate.now();
+			switch (dateFilter) {
+			case "week":			
+				fromDate = toDate.minusWeeks(1);
+				break;
+			case "month":
+				fromDate = toDate.minusMonths(1);
+				break;
+			case "sixmonth":
+				fromDate = toDate.minusMonths(6);
+				break;
+			default:
+				fromDate = toDate;				
+			}
+		}
+		
 		
 		if (fromDate == null || toDate == null) {
 			txnPage = accountService.getTransactionPageByAccountId(accessToken, id, continuationKey);
 		} else {
-			txnFromDate = DATE_FORMAT.format(fromDate);
-			txnToDate = DATE_FORMAT.format(toDate);
+			//txnFromDate = DATE_FORMAT.format(fromDate);
+			//txnToDate = DATE_FORMAT.format(toDate);
+			txnFromDate = fromDate.format(formatter);
+			txnToDate = toDate.format(formatter);
 			txnPage = accountService.getTransactionPageByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate, continuationKey);
 		}
 		

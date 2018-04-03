@@ -6,9 +6,13 @@
 	<div th:replace="fragments/header:: header"></div>
 	<h1 th:text="#{txn.list.title}">Default Title</h1>
 
-	<form id="filterTxnsForm" action="#"
+		<p>Filter transactions: </p>
+		<a th:href="@{/accounts/__${accountId}__/transactions?dateFilter=week}">Previous week</a>
+		<a th:href="@{/accounts/__${accountId}__/transactions?dateFilter=month}">Previous month</a>
+		<a th:href="@{/accounts/__${accountId}__/transactions?dateFilter=sixmonth}">Previous 6 months</a>
+	<form id="customDateFilterForm" action="#"
 		th:action="@{/accounts/__${accountId}__/transactions}" method="get">
-
+		<p>Custom Date Range:</p>
 		<label for="fromDate">Date From:</label> <input type="date"
 			name="fromDate" th:value="${fromDate}" required /> <label
 			for="toDate">To:</label> <input type="date" name="toDate"

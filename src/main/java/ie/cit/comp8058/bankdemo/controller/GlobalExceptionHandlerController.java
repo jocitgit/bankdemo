@@ -6,6 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,6 +40,16 @@ public class GlobalExceptionHandlerController  {
 		
 		return "error";
 	}
+	
+	// Handle error when no response from API server
+		@ExceptionHandler({ResourceAccessException.class})
+		public String handleResourceAccessError(Model model, ResourceAccessException e) {
+			
+			model.addAttribute("error", "ResourceAccessException");
+			model.addAttribute("message", e.getMessage());
+						
+			return "error";
+		}
 	
 	
 }
