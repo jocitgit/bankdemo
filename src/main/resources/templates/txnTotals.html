@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<div th:replace="fragments/header:: header"></div>
+	<h1 th:text="#{txn.totals.title}">Default Title</h1>
+
+
+	<div th:if="${#lists.isEmpty(totals)}">
+		<p>No transactions to display</p>
+	</div>
+
+	<div th:unless="${#lists.isEmpty(totals)}">
+
+		<table>
+			<tr>
+				<th>From</th>
+				<th>To</th>
+				<th>Credit</th>
+				<th>Debit</th>
+				<th>Total</th>
+				
+			</tr>
+			<tr th:each="total: ${totals}">
+				<td th:text="${total.fromDate}">from</td>
+				<td th:text="${total.toDate}">to</td>
+				<td th:text="${total.totalCredit}">credit</td>
+				<td th:text="${total.totalDebit}">debit</td>
+				<td th:text="${total.total}">total</td>
+				
+
+			</tr>
+		</table>
+		
+		
+		
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

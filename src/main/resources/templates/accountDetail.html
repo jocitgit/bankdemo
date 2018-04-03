@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
 <body>
 	<div th:replace="fragments/header:: header"></div>
@@ -51,7 +50,8 @@
 		<td th:text="${account.creditLimit}">CreditLimit</td>
 	</tr>
 </table>
-<a th:href="@{/accounts/__${account._id}__/transactions}">View Transactions</a>
+<a th:href="@{/accounts/__${account._id}__/transactions}">View Transactions</a><br/>
+<a th:href="@{/accounts/__${account._id}__/totals}">View Daily Totals</a>
 <div th:replace="fragments/footer :: footer">
 	</div>
 </body>

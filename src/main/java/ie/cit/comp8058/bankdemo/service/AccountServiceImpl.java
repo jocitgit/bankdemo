@@ -2,6 +2,10 @@ package ie.cit.comp8058.bankdemo.service;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,7 @@ import ie.cit.comp8058.bankdemo.dao.AccountDao;
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
 import ie.cit.comp8058.bankdemo.entity.TransactionPage;
+import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -46,7 +51,82 @@ public class AccountServiceImpl implements AccountService {
 			String toDate, String continuationKey) {
 		return accountDao.getTransactionPageByAccountIdAndDate(accessToken, id, fromDate, toDate, continuationKey);
 	}
+
+	@Override
+	public List<TransactionTotal> getTransactionTotals(String accessToken, String id, String fromDate, String toDate,
+			String groupBy) {
+
+		ArrayList<TransactionTotal> totals = new ArrayList<TransactionTotal>();
+		List<Transaction> txns;
+		
+		LocalDate startDate;
+		LocalDate nextDate;
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				
+		if (fromDate == null || toDate == null ) {
+			txns = accountDao.getTransactionsByAccountId(accessToken, id);
+		} else {
+			txns = accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
+		}
+		
+		if (txns == null) {
+			return null;
+		}
+		
+		if (txns.isEmpty()) {
+			return totals; //empty list
+		}
+		
+		Collections.reverse(txns); // put txns in ascending order
+		
+		if (fromDate != null) {
+			startDate = LocalDate.parse(fromDate, formatter);
+		} else {
+			startDate = LocalDate.parse(txns.get(0).getBookingDate(), formatter);
+		}
+		
+		nextDate = getNextDate(startDate, groupBy);
+		
+		TransactionTotal txnTotal = new TransactionTotal();
+		txnTotal.setFromDate(startDate);
+		txnTotal.setToDate(nextDate.minusDays(1));
+		
+		
+		for (Transaction t : txns) {
+			if (LocalDate.parse(t.getBookingDate(), formatter).isBefore(nextDate)) {
+				txnTotal.addTxnAmount(t.getAmount());				
+			} else {
+				totals.add(txnTotal);
+				startDate = nextDate;
+				nextDate = getNextDate(startDate, groupBy);
+				txnTotal = new TransactionTotal();
+				txnTotal.setFromDate(startDate);
+				txnTotal.setToDate(nextDate.minusDays(1));
+				txnTotal.addTxnAmount(t.getAmount());
+			}
+			//System.out.println(totals);
+		}
+		
+		totals.add(txnTotal); // The final one after exiting the loop
+		
+		return totals;
+		
+	}
+	
+	private LocalDate getNextDate(LocalDate currentDate, String groupBy) {
+		switch (groupBy) {
+		case "month":
+			return currentDate.plusMonths(1);
+		case "week":
+			return currentDate.plusWeeks(1);
+		case "day":
+			return currentDate.plusDays(1);
+		}
+		return currentDate;
+	}
 	
 	
 	
 }
+;

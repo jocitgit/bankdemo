@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
 <body>
 	<div th:replace="fragments/header:: header"></div>
@@ -12,7 +11,7 @@
 		<a th:href="@{/accounts/__${accountId}__/transactions?dateFilter=sixmonth}">Previous 6 months</a>
 	<form id="customDateFilterForm" action="#"
 		th:action="@{/accounts/__${accountId}__/transactions}" method="get">
-		<p>Custom Date Range:</p>
+		
 		<label for="fromDate">Date From:</label> <input type="date"
 			name="fromDate" th:value="${fromDate}" required /> <label
 			for="toDate">To:</label> <input type="date" name="toDate"

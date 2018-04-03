@@ -1,27 +1,22 @@
 package ie.cit.comp8058.bankdemo.controller;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
-import ie.cit.comp8058.bankdemo.entity.Transaction;
 import ie.cit.comp8058.bankdemo.entity.TransactionPage;
+import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
 import ie.cit.comp8058.bankdemo.exception.ItemNotFoundException;
 import ie.cit.comp8058.bankdemo.service.AccountService;
 
@@ -127,4 +122,16 @@ public class AccountController {
 		
 	}
 	
+	@GetMapping("/accounts/{id}/totals")
+	public String getTotals(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, Model model) {
+	
+/////////////////////////
+String fromDate = "2018-03-27";
+String toDate = "2018-03-28";
+String groupBy = "day";
+//////////////////////////////
+		List<TransactionTotal> totals = accountService.getTransactionTotals(accessToken, id, fromDate, toDate, groupBy);
+		model.addAttribute("totals", totals);
+		return "txnTotals";
+	}
 }

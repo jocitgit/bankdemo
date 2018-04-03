@@ -5,6 +5,7 @@ import java.util.List;
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
 import ie.cit.comp8058.bankdemo.entity.TransactionPage;
+import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
 
 public interface AccountService {
 
@@ -21,4 +22,5 @@ public interface AccountService {
 	TransactionPage getTransactionPageByAccountIdAndDate(String accessToken, String id, String txnFromDate,
 			String txnToDate, String continuationKey);
 	
+	List<TransactionTotal> getTransactionTotals(String accessToken, String id, String fromDate, String toDate, String groupBy);
 }
