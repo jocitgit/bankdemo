@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ie.cit.comp8058.bankdemo.dao.AccountDao;
@@ -91,11 +92,13 @@ public class AccountServiceImpl implements AccountService {
 		TransactionTotal txnTotal = new TransactionTotal();
 		txnTotal.setFromDate(startDate);
 		txnTotal.setToDate(nextDate.minusDays(1));
+		ListIterator<Transaction> iterator = txns.listIterator();
+		Transaction t;
 		
-		
-		for (Transaction t : txns) {
+		while(iterator.hasNext()) {
+			t = iterator.next();
 			if (LocalDate.parse(t.getBookingDate(), formatter).isBefore(nextDate)) {
-				txnTotal.addTxnAmount(t.getAmount());				
+				txnTotal.addTxnAmount(t.getAmount());	
 			} else {
 				totals.add(txnTotal);
 				startDate = nextDate;
@@ -103,11 +106,10 @@ public class AccountServiceImpl implements AccountService {
 				txnTotal = new TransactionTotal();
 				txnTotal.setFromDate(startDate);
 				txnTotal.setToDate(nextDate.minusDays(1));
-				txnTotal.addTxnAmount(t.getAmount());
+				iterator.previous(); // Go back and try this txn again
 			}
-			//System.out.println(totals);
 		}
-		
+
 		totals.add(txnTotal); // The final one after exiting the loop
 		
 		return totals;
