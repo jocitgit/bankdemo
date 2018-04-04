@@ -58,7 +58,7 @@
 		</table>
 	</div>
 	<div id="divPageNav">	
-		 <a th:unless="${currentKey == null || currentKey == ''}" th:href="@{/accounts/__${accountId}__/transactions?fromDate=__${fromDate}__&toDate=__${toDate}__&continuationKey=__${previousKey}__}">Previous</a>
+		 <a th:unless="${previousKey == ''}" th:href="@{/accounts/__${accountId}__/transactions?fromDate=__${fromDate}__&toDate=__${toDate}__&continuationKey=__${previousKey}__}">Previous</a>
 		 <a th:unless="${nextKey ==  ''}" th:href="@{/accounts/__${accountId}__/transactions?fromDate=__${fromDate}__&toDate=__${toDate}__&continuationKey=__${nextKey}__}">Next</a>
 		
 	</div>
