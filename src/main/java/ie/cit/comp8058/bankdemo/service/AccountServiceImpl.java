@@ -65,11 +65,11 @@ public class AccountServiceImpl implements AccountService {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				
-		if (fromDate.isEmpty() || toDate.isEmpty() ) {
-			txns = accountDao.getTransactionsByAccountId(accessToken, id);
-		} else {
-			txns = accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
+		if (fromDate==null || toDate==null) {
+			return null;
 		}
+		txns = accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
+		
 		
 		if (txns == null) {
 			return null;
@@ -81,11 +81,9 @@ public class AccountServiceImpl implements AccountService {
 		
 		Collections.reverse(txns); // put txns in ascending order
 		
-		if (fromDate != null) {
-			startDate = LocalDate.parse(fromDate, formatter);
-		} else {
-			startDate = LocalDate.parse(txns.get(0).getBookingDate(), formatter);
-		}
+		startDate = LocalDate.parse(fromDate, formatter);
+		
+			//startDate = LocalDate.parse(txns.get(0).getBookingDate(), formatter);
 		
 		nextDate = getNextDate(startDate, groupBy);
 		
@@ -108,6 +106,10 @@ public class AccountServiceImpl implements AccountService {
 				txnTotal.setToDate(nextDate.minusDays(1));
 				iterator.previous(); // Go back and try this txn again
 			}
+		}
+		
+		if (txnTotal.getToDate().isAfter(LocalDate.parse(toDate, formatter))) {
+			txnTotal.setToDate(LocalDate.parse(toDate, formatter)); // Maximum toDate
 		}
 
 		totals.add(txnTotal); // The final one after exiting the loop

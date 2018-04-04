@@ -3,14 +3,16 @@
 <head th:replace="fragments/head :: head"></head>
 <body>
 	<div th:replace="fragments/header:: header"></div>
+	<div th:replace="fragments/nav :: nav"></div>
 	<h1 th:text="#{account.list.title}">Default Title</h1>
+<div id="divAcctList">
 <table>
 	<tr th:each="account: ${accounts}">
-		<td th:text="${account._id}">Id</td>
-		<td th:text="${account.availableBalance}">Balance</td>
 		<td><a th:text="${account._id}" th:href="@{/accounts/__${account._id}__}">Id</a></td>
+		<td th:text="${account.availableBalance}">Balance</td>
 	</tr>
 </table>
+</div>
 <div th:replace="fragments/footer :: footer">
 	</div>
 </body>

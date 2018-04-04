@@ -34,6 +34,8 @@ public class AccountController {
     }
    */
 	
+	
+	
 	@RequestMapping("/accounts")
 	public String getAccounts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
 		
@@ -55,7 +57,7 @@ public class AccountController {
 		
 		if (account != null) {
 			model.addAttribute("account", account);
-			return "accountDetail";
+			return "accountDashboard";
 		} else {
 			throw new ItemNotFoundException();
 		}
@@ -136,22 +138,38 @@ public class AccountController {
 		String txnFromDate = "";
 		String txnToDate = "";
 		
-		if (fromDate != null && toDate != null) {
-			txnFromDate = fromDate.format(formatter);
-			txnToDate = toDate.format(formatter);
-		} 
+		if (fromDate == null || toDate == null) {
+			//Default to previous week
+			toDate = LocalDate.now();
+			fromDate = toDate.minusWeeks(1);
+		}
+		
+		txnFromDate = fromDate.format(formatter);
+		txnToDate = toDate.format(formatter);
+		 
 		
 		if (groupBy == null || groupBy.isEmpty()) {
-			groupBy = "month"; //default
+			groupBy = "day"; //default
 		}
 
 		List<TransactionTotal> totals = accountService.getTransactionTotals(accessToken, id, txnFromDate, txnToDate, groupBy);
-		model.addAttribute("accountId", id);
-		model.addAttribute("fromDate", txnFromDate);
-		model.addAttribute("toDate", txnToDate);
-		model.addAttribute("groupBy", groupBy);
-		model.addAttribute("totals", totals);
+
+		if (totals!=null) {
+			model.addAttribute("accountId", id);
+			model.addAttribute("fromDate", txnFromDate);
+			model.addAttribute("toDate", txnToDate);
+			model.addAttribute("groupBy", groupBy);
+			model.addAttribute("totals", totals);
+			return "txnTotals";
+		} else {
+			throw new ItemNotFoundException();
+		}
+	}
+	
+	@RequestMapping("/charts")
+	public String getChartss(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
+		//TODO add charts
+		return "home";
 		
-		return "txnTotals";
 	}
 }

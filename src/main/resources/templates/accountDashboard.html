@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<div th:replace="fragments/header:: header"></div>
+	<div th:replace="fragments/nav:: nav"></div>
+	<h1 th:text="#{account.dashboard.title}">Default Title</h1>
+	<div id="divDashDetails">
+		<table>
+			<tr>
+				<td>Id</td>
+				<td th:text="${account._id}">Id</td>
+			</tr>
+			<tr>
+				<td>NumValue</td>
+				<td th:text="${account.accountNumber.value}">NumValue</td>
+			</tr>
+			<tr>
+				<td>NumType</td>
+				<td th:text="${account.accountNumber._type}">NumType</td>
+			</tr>
+			<tr>
+				<td>Currency</td>
+				<td th:text="${account.currency}">Currency</td>
+			</tr>
+			<tr>
+				<td>Type</td>
+				<td th:text="${account.accountType}">Type</td>
+			</tr>
+			<tr>
+				<td>Balance</td>
+				<td th:text="${account.availableBalance}">Balance</td>
+			</tr>
+			<tr>
+				<td>BankName</td>
+				<td th:text="${account.bank.name}">BankName</td>
+			</tr>
+			<tr>
+				<td>BankBic</td>
+				<td th:text="${account.bank.bic}">BankBic</td>
+			</tr>
+			<tr>
+				<td>BankCountry</td>
+				<td th:text="${account.bank.country}">BankCountry</td>
+			</tr>
+			<tr>
+				<td>Status</td>
+				<td th:text="${account.status}">Status</td>
+			</tr>
+			<tr>
+				<td>CreditLimit</td>
+				<td th:text="${account.creditLimit}">CreditLimit</td>
+			</tr>
+		</table>
+	</div>
+	<div id="divDashTxns">
+		<a th:href="@{/accounts/__${account._id}__/transactions}">View Transactions</a>
+	</div>
+	<div id="divDashSummary">
+		<a th:href="@{/accounts/__${account._id}__/totals}">View Totals</a>
+	</div>
+	<div id="acctdivDashChart">
+		<a th:href="@{/accounts/__${account._id}__/charts}">View Chart</a>
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

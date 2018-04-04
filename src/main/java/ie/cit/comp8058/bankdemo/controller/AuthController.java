@@ -48,7 +48,7 @@ public class AuthController {
 		bankCookie.setMaxAge(Integer.parseInt(token.getExpires_in()));
 		response.addCookie(bankCookie);
 		// Do redirect not return here to update url
-		return "redirect:/main";
+		return "redirect:/accounts";
 		
 	}
 }

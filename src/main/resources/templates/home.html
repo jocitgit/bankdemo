@@ -4,9 +4,11 @@
 <body>
 	<div th:replace="fragments/header:: header"></div>
 	<h1 th:text="#{home.view.title}">Default Title</h1>
-	Welcome to the PSD2 API demo!
-
-<div th:replace="fragments/footer :: footer">
+	
+	<div id="divLogin">
+		<a href="/login?withUI=true">Login with UI</a><br /> 
+		<a href="/login?withUI=false">Login without UI</a><br />
 	</div>
-	</body>
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
 </html>
