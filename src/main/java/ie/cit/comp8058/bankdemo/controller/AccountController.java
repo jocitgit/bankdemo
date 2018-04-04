@@ -166,10 +166,10 @@ public class AccountController {
 		}
 	}
 	
-	@RequestMapping("/charts")
-	public String getChartss(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
+	@RequestMapping("/accounts/{id}/charts")
+	public String getCharts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
 		//TODO add charts
-		return "home";
+		return "chart";
 		
 	}
 }
