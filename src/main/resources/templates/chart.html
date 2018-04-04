@@ -41,17 +41,22 @@
                         }
                     },
                     tooltip: {
-                      	pointFormat: "${point.y:,.0f}"
+                      	pointFormat: "{point.y:,.2f}"
                     },
                     plotOptions: {
-                    	column: {
-                            pointPadding: 0.2,
-                            borderWidth: 0
+                        series: {
+                            stacking: 'normal'
                         }
                     },
                     series: [{
-                        data: [29.9, 171.5, 106.4]
+                    	name: 'DataSeries1',
+                        data: /*[[${chartData1}]]*/ []
+                    }, {
+                    	name: 'DataSeries2',
+                        data: /*[[${chartData2}]]*/ []
                     }]
+                    
+                    
                 });
             }
             

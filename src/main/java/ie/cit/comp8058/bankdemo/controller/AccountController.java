@@ -1,7 +1,9 @@
 package ie.cit.comp8058.bankdemo.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,7 +170,20 @@ public class AccountController {
 	
 	@RequestMapping("/accounts/{id}/charts")
 	public String getCharts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
-		//TODO add charts
+
+		List<BigDecimal> chartData1 = new ArrayList<BigDecimal>();
+		chartData1.add(BigDecimal.valueOf(56.34));
+		chartData1.add(BigDecimal.valueOf(92.92));
+		chartData1.add(BigDecimal.valueOf(27.96));
+		
+		List<BigDecimal> chartData2 = new ArrayList<BigDecimal>();
+		chartData2.add(BigDecimal.valueOf(-26.26));
+		chartData2.add(BigDecimal.valueOf(-45.78));
+		chartData2.add(BigDecimal.valueOf(-13.42));
+		
+		model.addAttribute("chartData1", chartData1);
+		model.addAttribute("chartData2", chartData2);
+		
 		return "chart";
 		
 	}
