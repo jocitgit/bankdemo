@@ -121,7 +121,7 @@ public class NordeaAccountDao implements AccountDao {
 				//System.out.println("base: " + keyBase);
 				try {
 					int pageNumber = Integer.parseInt(continuationKey.substring(separatorIndex+1));
-					if (pageNumber > 2) { // no key required for page 1 data
+					if (pageNumber > 0) { 
 						previousKey = keyBase + (pageNumber-1);
 					}
 				} catch (NumberFormatException e) {
@@ -148,6 +148,17 @@ public class NordeaAccountDao implements AccountDao {
 		try {
 			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
 			txnPage.setNextKey(responseNode.path("_continuationKey").asText());
+			
+			///// TEMPORARY FIX FOR ERROR IN NORDEA API ////
+			if ((continuationKey == null) || (continuationKey.isEmpty())) {
+				String oldKey = txnPage.getNextKey();
+				if (oldKey != null && !oldKey.isEmpty()) {
+					String newKey = oldKey.substring(0,oldKey.length()-1) + "1";
+					txnPage.setNextKey(newKey);
+				}
+			}
+			////////////////////////////////////////////////
+
 			JsonParser parser = responseNode.path("transactions").traverse();
 			txnPage.setTransactions(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
 			txnPage.setPreviousKey(previousKey);
@@ -176,7 +187,7 @@ public class NordeaAccountDao implements AccountDao {
 				//System.out.println("base: " + keyBase);
 				try {
 					int pageNumber = Integer.parseInt(continuationKey.substring(separatorIndex+1));
-					if (pageNumber > 2) { // no key required for page 1 data
+					if (pageNumber > 0) { 
 						previousKey = keyBase + (pageNumber-1);
 					}
 				} catch (NumberFormatException e) {
@@ -203,7 +214,17 @@ public class NordeaAccountDao implements AccountDao {
 		try {
 			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
 			txnPage.setNextKey(responseNode.path("_continuationKey").asText());
-			//System.out.println("key(" + continuationKey + ")");
+
+			///// TEMPORARY FIX FOR ERROR IN NORDEA API ////
+			if ((continuationKey == null) || (continuationKey.isEmpty())) {
+				String oldKey = txnPage.getNextKey();
+				if (oldKey != null && !oldKey.isEmpty()) {
+					String newKey = oldKey.substring(0,oldKey.length()-1) + "1";
+					txnPage.setNextKey(newKey);
+				}
+			}
+			////////////////////////////////////////////////
+
 			JsonParser parser = responseNode.path("transactions").traverse();
 			txnPage.setTransactions(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));
 			txnPage.setPreviousKey(previousKey);
@@ -244,7 +265,21 @@ public class NordeaAccountDao implements AccountDao {
 
 			try {
 				responseNode = objectMapper.readTree(response.getBody()).path("response"); 
-				continuationKey = responseNode.path("_continuationKey").asText();
+
+				///// TEMPORARY FIX FOR ERROR IN NORDEA API ////
+				if (continuationKey.isEmpty()) { // First time through only
+					String oldKey = responseNode.path("_continuationKey").asText();
+					if (oldKey != null && !oldKey.isEmpty()) {
+						String newKey = oldKey.substring(0,oldKey.length()-1) + "1";
+						continuationKey = newKey;
+					} else {
+						continuationKey = oldKey; // Only one page
+					}
+				} else {
+					// Standard code if no Nordea error
+					continuationKey = responseNode.path("_continuationKey").asText();
+				}
+				
 				//System.out.println("key(" + continuationKey + ")");
 				nextUri = uri + "?continuationKey=" + continuationKey;
 				parser = responseNode.path("transactions").traverse();
@@ -290,10 +325,22 @@ public class NordeaAccountDao implements AccountDao {
 
 			try {
 				responseNode = objectMapper.readTree(response.getBody()).path("response"); 
-				continuationKey = responseNode.path("_continuationKey").asText();
-				//System.out.println("key(" + continuationKey + ")");
-				nextUri = uri + "&continuationKey=" + continuationKey;
 				
+				///// TEMPORARY FIX FOR ERROR IN NORDEA API ////
+				if (continuationKey.isEmpty()) { // First time through only
+					String oldKey = responseNode.path("_continuationKey").asText();
+					if (oldKey != null && !oldKey.isEmpty()) {
+						String newKey = oldKey.substring(0,oldKey.length()-1) + "1";
+						continuationKey = newKey;
+					} else {
+						continuationKey = oldKey; // Only one page
+					}
+				} else {
+					// Standard code if no Nordea error
+					continuationKey = responseNode.path("_continuationKey").asText();
+				}
+				nextUri = uri + "&continuationKey=" + continuationKey;
+
 				parser = responseNode.path("transactions").traverse();
 				//Transaction[] txns = objectMapper.readValue(parser, Transaction[].class);
 				txns.addAll(objectMapper.readValue(parser, new TypeReference<List<Transaction>>(){}));

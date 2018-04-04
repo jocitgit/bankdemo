@@ -15,9 +15,9 @@
 		<input type="date" name="toDate" th:value="${toDate}" required />
 		<label for="groupBy">Group By:</label> 
 		<select name="groupBy">
-			<option value="day">Day</option>
-			<option value="week">Week</option>
-			<option value="month">Month</option>
+			<option th:selected="${groupBy=='day'}" value="day">Day</option>
+			<option th:selected="${groupBy=='week'}" value="week">Week</option>
+			<option th:selected="${groupBy=='month'}" value="month">Month</option>
 		</select>
 		<button type="submit">Filter</button>
 	</form>

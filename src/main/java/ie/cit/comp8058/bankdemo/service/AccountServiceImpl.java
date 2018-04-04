@@ -3,6 +3,7 @@ package ie.cit.comp8058.bankdemo.service;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,8 +69,9 @@ public class AccountServiceImpl implements AccountService {
 		if (fromDate==null || toDate==null) {
 			return null;
 		}
+		//System.out.println(LocalTime.now());
 		txns = accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
-		
+		//System.out.println(LocalTime.now());
 		
 		if (txns == null) {
 			return null;
@@ -80,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
 		}
 		
 		Collections.reverse(txns); // put txns in ascending order
-		
+				
 		startDate = LocalDate.parse(fromDate, formatter);
 		
 			//startDate = LocalDate.parse(txns.get(0).getBookingDate(), formatter);
