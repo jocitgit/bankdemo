@@ -7,6 +7,7 @@
 	<h1 th:text="#{txn.chart.title}">Default Title</h1>
 	
 	<div id="summaryChart"></div>
+	<div id="summaryChart2"></div>
 	
 	<div th:replace="fragments/footer :: footer"></div>
 	 
@@ -22,6 +23,7 @@
                     }
                 });
                 drawChart();
+                drawChart2();
             });
 	        
             function drawChart() {
@@ -59,7 +61,40 @@
                     
                 });
             }
-            
+
+            function drawChart2() {
+                var chart = Highcharts.chart('summaryChart2', {
+                    chart: {
+                        type: 'line',                      
+                    },
+                    title: {
+                        text: 'Title Text Here'
+                    },
+                    xAxis: {
+                        categories: ['May', 'June', 'July']
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'y-axis title here'
+                        }
+                    },
+                    tooltip: {
+                      	pointFormat: "{point.y:,.2f}"
+                    },
+                    plotOptions: {
+                        
+                    },
+                    series: [{
+                    	name: 'DataSeries1',
+                        data: /*[[${chartData1}]]*/ []
+                    }, {
+                    	name: 'DataSeries2',
+                        data: /*[[${chartData2}]]*/ []
+                    }]
+                    
+                    
+                });
+            }
             
             /*]]>*/
       </script> 
