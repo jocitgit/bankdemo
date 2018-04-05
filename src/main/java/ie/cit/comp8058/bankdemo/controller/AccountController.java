@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.BalanceChartData;
+import ie.cit.comp8058.bankdemo.entity.CreditDebitChartData;
 import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
 import ie.cit.comp8058.bankdemo.exception.ItemNotFoundException;
@@ -170,7 +171,7 @@ public class AccountController {
 	}
 	
 	@RequestMapping("/accounts/{id}/balanceChart")
-	public String getCharts(@CookieValue(value="bank_token", required=false) String accessToken, 
+	public String getBalanceChart(@CookieValue(value="bank_token", required=false) String accessToken, 
 			@PathVariable("id") String id,
 			@RequestParam(value="dateFilter", required=false) String dateFilter, 
 			Model model) {
@@ -220,5 +221,49 @@ public class AccountController {
 
 		return "balanceChart";
 
+	}
+	
+	@GetMapping("/accounts/{id}/creditDebitChart")
+	public String getCreditDebitChart(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id, 
+			@RequestParam(value="groupBy", required=false) String groupBy, 
+			@RequestParam(value="fromDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, 
+			@RequestParam(value="toDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate, 
+			Model model) {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String txnFromDate = "";
+		String txnToDate = "";
+		
+		if (fromDate == null || toDate == null) {
+			//Default to previous week
+			toDate = LocalDate.now();
+			fromDate = toDate.minusWeeks(1);
+		}
+		
+		txnFromDate = fromDate.format(formatter);
+		txnToDate = toDate.format(formatter);
+		 
+		
+		if (groupBy == null || groupBy.isEmpty()) {
+			groupBy = "day"; //default
+		}
+		
+		CreditDebitChartData data = accountService.getCreditDebitChartData(accessToken, id, txnFromDate, txnToDate, groupBy);
+
+		//System.out.println(data);
+		
+		if (data!=null) {
+			model.addAttribute("accountId", id);
+			model.addAttribute("fromDate", txnFromDate);
+			model.addAttribute("toDate", txnToDate);
+			model.addAttribute("groupBy", groupBy);
+			model.addAttribute("chartXValues", data.getXValues());
+			model.addAttribute("chartCreditValues", data.getCreditValues());
+			model.addAttribute("chartDebitValues", data.getDebitValues());
+			return "creditDebitChart";
+		} else {
+			throw new ItemNotFoundException();
+		}
 	}
 }

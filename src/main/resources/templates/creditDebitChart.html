@@ -4,10 +4,24 @@
 <body>
 	<div th:replace="fragments/header:: header"></div>
 	<div th:replace="fragments/nav:: nav"></div>
-	<h1 th:text="#{txn.chart.title}">Default Title</h1>
 	
-	<div id="summaryChart"></div>
-	<div id="summaryChart2"></div>
+	<form id="frmCreditDebitChart" action="#"
+		th:action="@{/accounts/__${accountId}__/creditDebitChart}" method="get">
+
+		<label for="fromDate">Date From:</label> 
+		<input type="date" name="fromDate" th:value="${fromDate}" required /> 
+		<label for="toDate">To:</label> 
+		<input type="date" name="toDate" th:value="${toDate}" required />
+		<label for="groupBy">Group By:</label> 
+		<select name="groupBy">
+			<option th:selected="${groupBy=='day'}" value="day">Day</option>
+			<option th:selected="${groupBy=='week'}" value="week">Week</option>
+			<option th:selected="${groupBy=='month'}" value="month">Month</option>
+		</select>
+		<button type="submit">Show Chart</button>
+	</form>
+	
+	<div id="creditDebitChart"></div>
 	
 	<div th:replace="fragments/footer :: footer"></div>
 	 
@@ -22,24 +36,23 @@
                         thousandsSep: ','
                     }
                 });
-                drawChart();
-                drawChart2();
+                drawCreditDebitChart();
             });
 	        
-            function drawChart() {
-                var chart = Highcharts.chart('summaryChart', {
+            function drawCreditDebitChart() {
+                var chart = Highcharts.chart('creditDebitChart', {
                     chart: {
                         type: 'column',                      
                     },
                     title: {
-                        text: 'Title Text Here'
+                        text: 'Credit/Debit Summary'
                     },
                     xAxis: {
-                        categories: ['May', 'June', 'July']
+                        categories: /*[[${chartXValues}]]*/ []
                     },
                     yAxis: {
                         title: {
-                            text: 'y-axis title here'
+                            text: 'Amount'
                         }
                     },
                     tooltip: {
@@ -51,51 +64,17 @@
                         }
                     },
                     series: [{
-                    	name: 'DataSeries1',
-                        data: /*[[${chartData1}]]*/ []
+                    	name: 'Credit',
+                        data: /*[[${chartCreditValues}]]*/ []
                     }, {
-                    	name: 'DataSeries2',
-                        data: /*[[${chartData2}]]*/ []
+                    	name: 'Debit',
+                        data: /*[[${chartDebitValues}]]*/ []
                     }]
                     
                     
                 });
             }
-
-            function drawChart2() {
-                var chart = Highcharts.chart('summaryChart2', {
-                    chart: {
-                        type: 'line',                      
-                    },
-                    title: {
-                        text: 'Title Text Here'
-                    },
-                    xAxis: {
-                        categories: ['May', 'June', 'July']
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'y-axis title here'
-                        }
-                    },
-                    tooltip: {
-                      	pointFormat: "{point.y:,.2f}"
-                    },
-                    plotOptions: {
-                        
-                    },
-                    series: [{
-                    	name: 'DataSeries1',
-                        data: /*[[${chartData1}]]*/ []
-                    }, {
-                    	name: 'DataSeries2',
-                        data: /*[[${chartData2}]]*/ []
-                    }]
-                    
-                    
-                });
-            }
-            
+           
             /*]]>*/
       </script> 
 	

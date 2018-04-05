@@ -63,8 +63,9 @@
 	<div id="divDashSummary">
 		<a th:href="@{/accounts/__${account._id}__/totals}">View Totals</a>
 	</div>
-	<div id="acctdivDashChart">
+	<div id="divDashChart">
 		<a th:href="@{/accounts/__${account._id}__/balanceChart}">View Balance Chart</a>
+		<a th:href="@{/accounts/__${account._id}__/creditDebitChart}">View Credit/Debit Chart</a>
 	</div>
 
 	<div th:replace="fragments/footer :: footer"></div>

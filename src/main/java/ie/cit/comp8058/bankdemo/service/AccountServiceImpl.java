@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ie.cit.comp8058.bankdemo.dao.AccountDao;
 import ie.cit.comp8058.bankdemo.entity.Account;
 import ie.cit.comp8058.bankdemo.entity.BalanceChartData;
+import ie.cit.comp8058.bankdemo.entity.CreditDebitChartData;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
 import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
@@ -136,6 +137,9 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public BalanceChartData getBalanceChartData(String accessToken, String id, String fromDate, String toDate) {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yy");
+		
 		List<TransactionTotal> dailyTotals = getTransactionTotals(accessToken, id, fromDate, toDate, "day");
 		
 		Account account = accountDao.getAccountById(accessToken, id);
@@ -145,7 +149,7 @@ public class AccountServiceImpl implements AccountService {
 		}
 		
 		BigDecimal currentBalance = account.getBookedBalance();
-		
+		//System.out.println(currentBalance);
 		
 		BalanceChartData data = new BalanceChartData();
 		BigDecimal adjustments = BigDecimal.ZERO;
@@ -159,7 +163,7 @@ public class AccountServiceImpl implements AccountService {
 		//System.out.println(balance);
 		
 		for (TransactionTotal total: dailyTotals) {
-			data.addXValue(total.getFromDate());
+			data.addXValue(total.getToDate().format(formatter));
 			balance = balance.add(total.getTotal());
 			data.addYValue(balance);
 		}
@@ -167,6 +171,33 @@ public class AccountServiceImpl implements AccountService {
 		//System.out.println(data);
 		return data;
 		
+	}
+
+	@Override
+	public CreditDebitChartData getCreditDebitChartData(String accessToken, String id, String fromDate, String toDate,
+			String groupBy) {
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yy");
+		
+		List<TransactionTotal> totals = getTransactionTotals(accessToken, id, fromDate, toDate, groupBy);
+		
+		if (totals==null) {
+			return null;
+		}
+		
+		CreditDebitChartData data = new CreditDebitChartData();
+		
+		for (TransactionTotal total : totals) {
+			if (groupBy=="day") {
+				data.addXValue(total.getToDate().format(formatter));
+			} else {
+				data.addXValue(total.getFromDate().format(formatter) + "to" + total.getToDate().format(formatter));
+			}
+			data.addCreditValue(total.getTotalCredit());
+			data.addDebitValue(total.getTotalDebit());
+		}
+		
+		return data;
 	}
 	
 	

@@ -7,18 +7,18 @@ import java.util.List;
 
 public class BalanceChartData {
 
-	private List<LocalDate> XValues;
+	private List<String> XValues;
 	private List<BigDecimal> YValues;
 	
 	public BalanceChartData() {
-		XValues = new ArrayList<LocalDate>();
+		XValues = new ArrayList<String>();
 		YValues = new ArrayList<BigDecimal>();
 	}
 	
-	public List<LocalDate> getXValues() {
+	public List<String> getXValues() {
 		return XValues;
 	}
-	public void setXValues(List<LocalDate> XValues) {
+	public void setXValues(List<String> XValues) {
 		this.XValues = XValues;
 	}
 	public List<BigDecimal> getYValues() {
@@ -28,8 +28,8 @@ public class BalanceChartData {
 		this.YValues = YValues;
 	}
 	
-	public void addXValue(LocalDate date) {
-		XValues.add(date);
+	public void addXValue(String x) {
+		XValues.add(x);
 	}
 	
 	public void addYValue(BigDecimal amount) {
