@@ -2,6 +2,7 @@ package ie.cit.comp8058.bankdemo.service;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +14,7 @@ import java.util.ListIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import ie.cit.comp8058.bankdemo.dao.AccountDao;
 import ie.cit.comp8058.bankdemo.entity.Account;
+import ie.cit.comp8058.bankdemo.entity.BalanceChartData;
 import ie.cit.comp8058.bankdemo.entity.Transaction;
 import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
@@ -130,6 +132,41 @@ public class AccountServiceImpl implements AccountService {
 			return currentDate.plusDays(1);
 		}
 		return currentDate;
+	}
+
+	@Override
+	public BalanceChartData getBalanceChartData(String accessToken, String id, String fromDate, String toDate) {
+		List<TransactionTotal> dailyTotals = getTransactionTotals(accessToken, id, fromDate, toDate, "day");
+		
+		Account account = accountDao.getAccountById(accessToken, id);
+
+		if (dailyTotals==null || account==null) {
+			return null;
+		}
+		
+		BigDecimal currentBalance = account.getBookedBalance();
+		
+		
+		BalanceChartData data = new BalanceChartData();
+		BigDecimal adjustments = BigDecimal.ZERO;
+		
+		for (TransactionTotal total: dailyTotals) {
+			adjustments = adjustments.add(total.getTotal());			
+		}
+		
+		//System.out.println(adjustments);
+		BigDecimal balance = currentBalance.subtract(adjustments);
+		//System.out.println(balance);
+		
+		for (TransactionTotal total: dailyTotals) {
+			data.addXValue(total.getFromDate());
+			balance = balance.add(total.getTotal());
+			data.addYValue(balance);
+		}
+		
+		//System.out.println(data);
+		return data;
+		
 	}
 	
 	

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
+import ie.cit.comp8058.bankdemo.entity.BalanceChartData;
 import ie.cit.comp8058.bankdemo.entity.TransactionPage;
 import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
 import ie.cit.comp8058.bankdemo.exception.ItemNotFoundException;
@@ -168,23 +169,56 @@ public class AccountController {
 		}
 	}
 	
-	@RequestMapping("/accounts/{id}/charts")
-	public String getCharts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
+	@RequestMapping("/accounts/{id}/balanceChart")
+	public String getCharts(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id,
+			@RequestParam(value="dateFilter", required=false) String dateFilter, 
+			Model model) {
 
-		List<BigDecimal> chartData1 = new ArrayList<BigDecimal>();
-		chartData1.add(BigDecimal.valueOf(56.34));
-		chartData1.add(BigDecimal.valueOf(92.92));
-		chartData1.add(BigDecimal.valueOf(27.96));
-		
-		List<BigDecimal> chartData2 = new ArrayList<BigDecimal>();
-		chartData2.add(BigDecimal.valueOf(-26.26));
-		chartData2.add(BigDecimal.valueOf(-45.78));
-		chartData2.add(BigDecimal.valueOf(-13.42));
-		
-		model.addAttribute("chartData1", chartData1);
-		model.addAttribute("chartData2", chartData2);
-		
-		return "chart";
-		
+		LocalDate fromDate;
+		LocalDate toDate;
+		String txnFromDate = "";
+		String txnToDate = "";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		if (dateFilter==null) {
+			dateFilter = "week"; //default
+		}
+
+
+		toDate = LocalDate.now();
+
+		switch (dateFilter) {
+		case "week":			
+			fromDate = toDate.minusWeeks(1);
+			break;
+		case "month":
+			fromDate = toDate.minusMonths(1);
+			break;
+		case "sixmonth":
+			fromDate = toDate.minusMonths(6);
+			break;
+		default:
+			fromDate = toDate.minusWeeks(1); //default			
+		}
+
+
+		txnFromDate = fromDate.format(formatter);
+		txnToDate = toDate.format(formatter);
+
+		BalanceChartData data = accountService.getBalanceChartData(accessToken, id, txnFromDate, txnToDate);
+
+		if (data==null) {
+			throw new ItemNotFoundException();
+		}
+
+		//model.addAttribute("fromDate", txnFromDate);
+		//model.addAttribute("toDate", txnToDate);
+		model.addAttribute("accountId", id);
+		model.addAttribute("chartXValues", data.getXValues());
+		model.addAttribute("chartYValues", data.getYValues());
+
+		return "balanceChart";
+
 	}
 }

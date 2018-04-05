@@ -28,8 +28,12 @@
 				<td th:text="${account.accountType}">Type</td>
 			</tr>
 			<tr>
-				<td>Balance</td>
-				<td th:text="${account.availableBalance}">Balance</td>
+				<td>Available Balance</td>
+				<td th:text="${account.availableBalance}">Available Balance</td>
+			</tr>
+			<tr>
+				<td>Booked Balance</td>
+				<td th:text="${account.bookedBalance}">Booked Balance</td>
 			</tr>
 			<tr>
 				<td>BankName</td>
@@ -60,7 +64,7 @@
 		<a th:href="@{/accounts/__${account._id}__/totals}">View Totals</a>
 	</div>
 	<div id="acctdivDashChart">
-		<a th:href="@{/accounts/__${account._id}__/charts}">View Chart</a>
+		<a th:href="@{/accounts/__${account._id}__/balanceChart}">View Balance Chart</a>
 	</div>
 
 	<div th:replace="fragments/footer :: footer"></div>

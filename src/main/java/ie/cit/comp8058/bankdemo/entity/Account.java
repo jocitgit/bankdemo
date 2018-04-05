@@ -13,6 +13,7 @@ public class Account {
 	public String ownerName;
 	public String accountType;
 	public BigDecimal availableBalance;
+	public BigDecimal bookedBalance;
 	public Bank bank;
 	public String status;
 	public BigDecimal creditLimit;
@@ -59,6 +60,12 @@ public class Account {
 	public void setAvailableBalance(BigDecimal availableBalance) {
 		this.availableBalance = availableBalance;
 	}
+	public BigDecimal getBookedBalance() {
+		return bookedBalance;
+	}
+	public void setBookedBalance(BigDecimal bookedBalance) {
+		this.bookedBalance = bookedBalance;
+	}
 	public Bank getBank() {
 		return bank;
 	}
@@ -81,7 +88,7 @@ public class Account {
 	public String toString() {
 		return "Account [_id=" + _id + ", country=" + country + ", accountNumber=" + accountNumber + ", currency="
 				+ currency + ", ownerName=" + ownerName + ", accountType=" + accountType + ", availableBalance="
-				+ availableBalance + ", bank=" + bank + ", status=" + status + ", creditLimit=" + creditLimit + "]";
+				+ availableBalance + ", bookedBalance=" + bookedBalance + ", bank=" + bank + ", status=" + status + ", creditLimit=" + creditLimit + "]";
 	}
 	
 	
