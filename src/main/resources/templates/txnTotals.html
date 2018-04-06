@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<div th:replace="fragments/header:: header"></div>
+	<div th:replace="fragments/nav:: nav"></div>
+	<h1 th:text="#{txn.totals.title}">Default Title</h1>
+
+	<form id="frmTotalsFilter" action="#"
+		th:action="@{/accounts/__${accountId}__/totals}" method="get">
+
+		<label for="fromDate">Date From:</label> 
+		<input type="date" name="fromDate" th:value="${fromDate}" required /> 
+		<label for="toDate">To:</label> 
+		<input type="date" name="toDate" th:value="${toDate}" required />
+		<label for="groupBy">Group By:</label> 
+		<select name="groupBy">
+			<option th:selected="${groupBy=='day'}" value="day">Day</option>
+			<option th:selected="${groupBy=='week'}" value="week">Week</option>
+			<option th:selected="${groupBy=='month'}" value="month">Month</option>
+		</select>
+		<button type="submit">Filter</button>
+	</form>
+			
+	<div th:if="${#lists.isEmpty(totals)}">
+		<p>No transactions to display</p>
+	</div>
+
+	<div id="divTxnTotals" th:unless="${#lists.isEmpty(totals)}">
+
+		<table>
+			<tr>
+				<th>From</th>
+				<th>To</th>
+				<th>Credit</th>
+				<th>Debit</th>
+				<th>Total</th>
+				
+			</tr>
+			<tr th:each="total: ${totals}">
+				<td th:text="${total.fromDate}">from</td>
+				<td th:text="${total.toDate}">to</td>
+				<td th:text="${total.totalCredit}">credit</td>
+				<td th:text="${total.totalDebit}">debit</td>
+				<td th:text="${total.total}">total</td>
+				
+
+			</tr>
+		</table>
+		
+		
+		
+	</div>
+
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

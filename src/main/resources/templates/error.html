@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body> 
+	<div th:replace="fragments/header:: header">
+	</div>	
+	<div>
+		<h1> Unfortunately an error occurred </h1>
+		
+		<p th:if="${status}">Status: <span th:text="${status}"> </span></p>
+		<p th:if="${error}">Error: <span th:text="${error}"> </span></p>
+		<p th:if="${message}">Message: <span th:text="${message}"> </span></p>
+		<p th:if="${failureCode}">Code: <span th:text="${failureCode}"> </span></p>
+		<p th:if="${failureDesc}">Description: <span th:text="${failureDesc}"> </span></p>
+						
+		<p><span th:text="${#dates.format(#dates.createNow(),'YYYY/MM/dd HH:mm')}">Timestamp</span></p>
+	
+	</div>
+	
+	<div th:replace="fragments/footer :: footer">
+	</div>
+	
+</body>
+</html>

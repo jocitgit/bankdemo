@@ -1,81 +1,271 @@
 package ie.cit.comp8058.bankdemo.controller;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ie.cit.comp8058.bankdemo.entity.Account;
+import ie.cit.comp8058.bankdemo.entity.BalanceChartData;
+import ie.cit.comp8058.bankdemo.entity.CreditDebitChartData;
+import ie.cit.comp8058.bankdemo.entity.TransactionPage;
+import ie.cit.comp8058.bankdemo.entity.TransactionTotal;
+import ie.cit.comp8058.bankdemo.exception.ItemNotFoundException;
+import ie.cit.comp8058.bankdemo.service.AccountService;
 
 @Controller
 public class AccountController {
 
-	@Autowired RestTemplate restTemplate;
+	@Autowired
+	AccountService accountService;
 	
-	@Value( "${CLIENT_ID}" )
-	private String clientId;
+	/*
+	// Binds <input type=date> format 'yyyy'MM-dd to Date request parameter
+	@InitBinder
+    public void initBinder(WebDataBinder binder) {
+       binder.registerCustomEditor(Date.class, new CustomDateEditor(DATE_FORMAT, true));
+    }
+   */
 	
-	@Value( "${CLIENT_SECRET}" )
-	private String clientSecret;
+	
 	
 	@RequestMapping("/accounts")
-	public String getAccounts(@CookieValue("bank_token") String accessToken, Model model) {
+	public String getAccounts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
 		
-		// TODO - handle error if no cookie? or defaults to null?
-		if (accessToken == null) {
-			//System.out.println("Access Token Cookie is null");
-			return "home";
-		}
+		Account[] accounts = accountService.getAllAccounts(accessToken);
 		
-		
-		String accounts_uri = "https://api.nordeaopenbanking.com/v2/accounts";
-
-		HttpHeaders headers2 = new HttpHeaders();
-		headers2.setContentType(MediaType.APPLICATION_JSON);
-		headers2.add("Accept", "application/json");
-		headers2.add("Authorization", "Bearer " + accessToken);
-		headers2.add("X-IBM-Client-Id", clientId);
-		headers2.add("X-IBM-Client-Secret", clientSecret);
-
-		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers2);
-		
-		ResponseEntity<String> response = restTemplate.exchange(accounts_uri, HttpMethod.GET, entity, String.class);
-		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
-		//System.out.println(response.getBody());
-
-			
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		
-		try {
-			JsonNode accountsNode = objectMapper.readTree(response.getBody()).path("response").path("accounts");
-			JsonParser parser = accountsNode.traverse();
-			Account[] accounts = objectMapper.readValue(parser, Account[].class);
-			for (Account a : accounts) {
-				//System.out.println(a);
-			}
+		if (accounts != null) {
 			model.addAttribute("accounts", accounts);
 			return "accountList";
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "home";
+		} else {
+			throw new ItemNotFoundException();
 		}
 		
+	}
+	
+	@RequestMapping("/accounts/{id}")
+	public String getAccounts(@CookieValue(value="bank_token", required=false) String accessToken, @PathVariable("id") String id, Model model) {
+		
+		Account account = accountService.getAccountById(accessToken, id);
+		
+		if (account != null) {
+			model.addAttribute("account", account);
+			return "accountDashboard";
+		} else {
+			throw new ItemNotFoundException();
+		}
+		
+	}
+	
+	@GetMapping("/accounts/{id}/transactions")
+	public String getTransactions(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id, 
+			@RequestParam(value="dateFilter", required=false) String dateFilter, 
+			@RequestParam(value="fromDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, 
+			@RequestParam(value="toDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate, 
+			@RequestParam(value="continuationKey", required=false) String continuationKey, 
+			Model model) {
+		
+		TransactionPage txnPage;
+		String txnFromDate = "";
+		String txnToDate = "";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		
+		if (dateFilter != null) {
+			toDate = LocalDate.now();
+			switch (dateFilter) {
+			case "week":			
+				fromDate = toDate.minusWeeks(1);
+				break;
+			case "month":
+				fromDate = toDate.minusMonths(1);
+				break;
+			case "sixmonth":
+				fromDate = toDate.minusMonths(6);
+				break;
+			default:
+				fromDate = toDate;				
+			}
+		}
+		
+		
+		if (fromDate == null || toDate == null) {
+			txnPage = accountService.getTransactionPageByAccountId(accessToken, id, continuationKey);
+		} else {
+			//txnFromDate = DATE_FORMAT.format(fromDate);
+			//txnToDate = DATE_FORMAT.format(toDate);
+			txnFromDate = fromDate.format(formatter);
+			txnToDate = toDate.format(formatter);
+			txnPage = accountService.getTransactionPageByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate, continuationKey);
+		}
+		
+		
+		//System.out.println("PrevKey: " + previousKey);
+		
+		if (txnPage != null) {
+			model.addAttribute("txns", txnPage.getTransactions());	
+			model.addAttribute("currentKey", continuationKey);
+			model.addAttribute("previousKey", txnPage.getPreviousKey());
+			model.addAttribute("nextKey", txnPage.getNextKey());
+			model.addAttribute("accountId", id);
+			model.addAttribute("fromDate", txnFromDate);
+			model.addAttribute("toDate", txnToDate);
+			return "txnList";
+		} else {
+			throw new ItemNotFoundException();
+		}
+		
+	}
+	
+
+	
+	@GetMapping("/accounts/{id}/totals")
+	public String getTotals(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id, 
+			@RequestParam(value="groupBy", required=false) String groupBy, 
+			@RequestParam(value="fromDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, 
+			@RequestParam(value="toDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate, 
+			Model model) {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String txnFromDate = "";
+		String txnToDate = "";
+		
+		if (fromDate == null || toDate == null) {
+			//Default to previous week
+			toDate = LocalDate.now();
+			fromDate = toDate.minusWeeks(1);
+		}
+		
+		txnFromDate = fromDate.format(formatter);
+		txnToDate = toDate.format(formatter);
+		 
+		
+		if (groupBy == null || groupBy.isEmpty()) {
+			groupBy = "day"; //default
+		}
+
+		List<TransactionTotal> totals = accountService.getTransactionTotals(accessToken, id, txnFromDate, txnToDate, groupBy);
+
+		if (totals!=null) {
+			model.addAttribute("accountId", id);
+			model.addAttribute("fromDate", txnFromDate);
+			model.addAttribute("toDate", txnToDate);
+			model.addAttribute("groupBy", groupBy);
+			model.addAttribute("totals", totals);
+			return "txnTotals";
+		} else {
+			throw new ItemNotFoundException();
+		}
+	}
+	
+	@RequestMapping("/accounts/{id}/balanceChart")
+	public String getBalanceChart(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id,
+			@RequestParam(value="dateFilter", required=false) String dateFilter, 
+			Model model) {
+
+		LocalDate fromDate;
+		LocalDate toDate;
+		String txnFromDate = "";
+		String txnToDate = "";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		if (dateFilter==null) {
+			dateFilter = "week"; //default
+		}
+
+
+		toDate = LocalDate.now();
+
+		switch (dateFilter) {
+		case "week":			
+			fromDate = toDate.minusWeeks(1);
+			break;
+		case "month":
+			fromDate = toDate.minusMonths(1);
+			break;
+		case "sixmonth":
+			fromDate = toDate.minusMonths(6);
+			break;
+		default:
+			fromDate = toDate.minusWeeks(1); //default			
+		}
+
+
+		txnFromDate = fromDate.format(formatter);
+		txnToDate = toDate.format(formatter);
+
+		BalanceChartData data = accountService.getBalanceChartData(accessToken, id, txnFromDate, txnToDate);
+
+		if (data==null) {
+			throw new ItemNotFoundException();
+		}
+
+		//model.addAttribute("fromDate", txnFromDate);
+		//model.addAttribute("toDate", txnToDate);
+		model.addAttribute("accountId", id);
+		model.addAttribute("chartXValues", data.getXValues());
+		model.addAttribute("chartYValues", data.getYValues());
+		model.addAttribute("currency", data.getCurrency());
+
+		return "balanceChart";
+
+	}
+	
+	@GetMapping("/accounts/{id}/creditDebitChart")
+	public String getCreditDebitChart(@CookieValue(value="bank_token", required=false) String accessToken, 
+			@PathVariable("id") String id, 
+			@RequestParam(value="groupBy", required=false) String groupBy, 
+			@RequestParam(value="fromDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, 
+			@RequestParam(value="toDate", required=false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate, 
+			Model model) {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String txnFromDate = "";
+		String txnToDate = "";
+		
+		if (fromDate == null || toDate == null) {
+			//Default to previous week
+			toDate = LocalDate.now();
+			fromDate = toDate.minusWeeks(1);
+		}
+		
+		txnFromDate = fromDate.format(formatter);
+		txnToDate = toDate.format(formatter);
+		 
+		
+		if (groupBy == null || groupBy.isEmpty()) {
+			groupBy = "day"; //default
+		}
+		
+		CreditDebitChartData data = accountService.getCreditDebitChartData(accessToken, id, txnFromDate, txnToDate, groupBy);
+
+		//System.out.println(data);
+		
+		if (data!=null) {
+			model.addAttribute("accountId", id);
+			model.addAttribute("fromDate", txnFromDate);
+			model.addAttribute("toDate", txnToDate);
+			model.addAttribute("groupBy", groupBy);
+			model.addAttribute("chartXValues", data.getXValues());
+			model.addAttribute("chartCreditValues", data.getCreditValues());
+			model.addAttribute("chartDebitValues", data.getDebitValues());
+			model.addAttribute("currency", data.getCurrency());
+			return "creditDebitChart";
+		} else {
+			throw new ItemNotFoundException();
+		}
 	}
 }

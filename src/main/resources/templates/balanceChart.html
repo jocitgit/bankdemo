@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<div th:replace="fragments/header:: header"></div>
+	<div th:replace="fragments/nav:: nav"></div>
+	
+	<div id="divBalanceChartFilter">
+		<a th:href="@{/accounts/__${accountId}__/balanceChart?dateFilter=week}">Previous week</a>
+		<a th:href="@{/accounts/__${accountId}__/balanceChart?dateFilter=month}">Previous month</a>
+		<a th:href="@{/accounts/__${accountId}__/balanceChart?dateFilter=sixmonth}">Previous 6 months</a>
+		
+	</div>
+		
+	<div id="balanceChart"></div>
+	
+	<div th:replace="fragments/footer :: footer"></div>
+	 
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/highcharts/highcharts.js}"></script>
+	<script th:inline="javascript">
+	        /*<![CDATA[*/
+            $(function () { 
+                Highcharts.setOptions({
+                    lang: {
+                        decimalPoint: '.',
+                        thousandsSep: ','
+                    }
+                });
+                drawBalanceChart();
+            });
+	        
+            
+
+            function drawBalanceChart() {
+                var chart = Highcharts.chart('balanceChart', {
+                    chart: {
+                        type: 'line',                      
+                    },
+                    title: {
+                        text: 'Account Balance History'
+                    },
+                    xAxis: {
+                        categories: /*[[${chartXValues}]]*/ []
+                    },
+                    yAxis: {
+                        title: {
+                        	text: 'Balance (' + [[${currency}]] + ')'
+                        }
+                    },
+                    tooltip: {
+                      	pointFormat: "{point.y:,.2f}"
+                    },
+                    plotOptions: {
+                        
+                    },
+                    series: [{
+                    	name: 'Balance',
+                        data: /*[[${chartYValues}]]*/ []
+             
+                    }]
+                    
+                    
+                });
+            }
+            
+            /*]]>*/
+      </script> 
+	
+</body>
+</html>
+

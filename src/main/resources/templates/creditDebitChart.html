@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+	<div th:replace="fragments/header:: header"></div>
+	<div th:replace="fragments/nav:: nav"></div>
+	
+	<form id="frmCreditDebitChart" action="#"
+		th:action="@{/accounts/__${accountId}__/creditDebitChart}" method="get">
+
+		<label for="fromDate">Date From:</label> 
+		<input type="date" name="fromDate" th:value="${fromDate}" required /> 
+		<label for="toDate">To:</label> 
+		<input type="date" name="toDate" th:value="${toDate}" required />
+		<label for="groupBy">Group By:</label> 
+		<select name="groupBy">
+			<option th:selected="${groupBy=='day'}" value="day">Day</option>
+			<option th:selected="${groupBy=='week'}" value="week">Week</option>
+			<option th:selected="${groupBy=='month'}" value="month">Month</option>
+		</select>
+		<button type="submit">Show Chart</button>
+	</form>
+	
+	<div id="creditDebitChart"></div>
+	
+	<div th:replace="fragments/footer :: footer"></div>
+	 
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/highcharts/highcharts.js}"></script>
+	<script th:inline="javascript">
+	        /*<![CDATA[*/
+            $(function () { 
+                Highcharts.setOptions({
+                    lang: {
+                        decimalPoint: '.',
+                        thousandsSep: ','
+                    }
+                });
+                drawCreditDebitChart();
+            });
+	        
+            function drawCreditDebitChart() {
+                var chart = Highcharts.chart('creditDebitChart', {
+                    chart: {
+                        type: 'column',                      
+                    },
+                    title: {
+                        text: 'Credit/Debit Summary'
+                    },
+                    xAxis: {
+                        categories: /*[[${chartXValues}]]*/ []
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Amount (' + [[${currency}]] + ')'
+                        }
+                    },
+                    tooltip: {
+                      	pointFormat: "{point.y:,.2f}"
+                    },
+                    plotOptions: {
+                        series: {
+                            stacking: 'normal'
+                        }
+                    },
+                    series: [{
+                    	name: 'Credit',
+                        data: /*[[${chartCreditValues}]]*/ []
+                    }, {
+                    	name: 'Debit',
+                        data: /*[[${chartDebitValues}]]*/ []
+                    }]
+                    
+                    
+                });
+            }
+           
+            /*]]>*/
+      </script> 
+	
+</body>
+</html>
+

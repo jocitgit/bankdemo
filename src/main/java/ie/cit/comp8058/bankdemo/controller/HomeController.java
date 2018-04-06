@@ -10,14 +10,11 @@ public class HomeController {
 	
 	
 	@RequestMapping("/")
-    public String login() {
+    public String home() {
         return "home";
 	}
 	
-	@RequestMapping("/main")
-    public String mainMenu() {
-        return "mainMenu";
-	}
+	
 	
 	
 	
