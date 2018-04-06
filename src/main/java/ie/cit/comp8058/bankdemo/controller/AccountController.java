@@ -218,6 +218,7 @@ public class AccountController {
 		model.addAttribute("accountId", id);
 		model.addAttribute("chartXValues", data.getXValues());
 		model.addAttribute("chartYValues", data.getYValues());
+		model.addAttribute("currency", data.getCurrency());
 
 		return "balanceChart";
 
@@ -261,6 +262,7 @@ public class AccountController {
 			model.addAttribute("chartXValues", data.getXValues());
 			model.addAttribute("chartCreditValues", data.getCreditValues());
 			model.addAttribute("chartDebitValues", data.getDebitValues());
+			model.addAttribute("currency", data.getCurrency());
 			return "creditDebitChart";
 		} else {
 			throw new ItemNotFoundException();

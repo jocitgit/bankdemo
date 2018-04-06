@@ -152,6 +152,8 @@ public class AccountServiceImpl implements AccountService {
 		//System.out.println(currentBalance);
 		
 		BalanceChartData data = new BalanceChartData();
+		data.setCurrency(account.getCurrency());
+		
 		BigDecimal adjustments = BigDecimal.ZERO;
 		
 		for (TransactionTotal total: dailyTotals) {
@@ -179,13 +181,16 @@ public class AccountServiceImpl implements AccountService {
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yy");
 		
+		Account account = accountDao.getAccountById(accessToken, id);
+		
 		List<TransactionTotal> totals = getTransactionTotals(accessToken, id, fromDate, toDate, groupBy);
 		
-		if (totals==null) {
+		if (account==null || totals==null) {
 			return null;
 		}
 		
 		CreditDebitChartData data = new CreditDebitChartData();
+		data.setCurrency(account.getCurrency());
 		
 		for (TransactionTotal total : totals) {
 			if (groupBy=="day") {

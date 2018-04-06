@@ -9,10 +9,12 @@ public class BalanceChartData {
 
 	private List<String> XValues;
 	private List<BigDecimal> YValues;
+	private String currency;
 	
 	public BalanceChartData() {
 		XValues = new ArrayList<String>();
 		YValues = new ArrayList<BigDecimal>();
+		currency="";
 	}
 	
 	public List<String> getXValues() {
@@ -28,6 +30,14 @@ public class BalanceChartData {
 		this.YValues = YValues;
 	}
 	
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
 	public void addXValue(String x) {
 		XValues.add(x);
 	}
@@ -35,11 +45,13 @@ public class BalanceChartData {
 	public void addYValue(BigDecimal amount) {
 		YValues.add(amount);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "BalanceChartData [XValues=" + XValues + ", YValues=" + YValues + "]";
+		return "BalanceChartData [XValues=" + XValues + ", YValues=" + YValues + ", currency=" + currency + "]";
 	}
+	
+	
 	
 	
 }

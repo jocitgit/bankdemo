@@ -10,12 +10,14 @@ public class CreditDebitChartData {
 	private List<String> XValues;
 	private List<BigDecimal> creditValues;
 	private List<BigDecimal> debitValues;
+	private String currency;
 	
 	
 	public CreditDebitChartData() {
 		XValues = new ArrayList<String>();
 		creditValues = new ArrayList<BigDecimal>();
 		debitValues = new ArrayList<BigDecimal>();
+		currency="";
 	}
 
 
@@ -47,7 +49,17 @@ public class CreditDebitChartData {
 	public void setDebitValues(List<BigDecimal> debitValues) {
 		this.debitValues = debitValues;
 	}
-	
+		
+	public String getCurrency() {
+		return currency;
+	}
+
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+
 	public void addXValue(String x) {
 		XValues.add(x);
 	}
@@ -64,8 +76,10 @@ public class CreditDebitChartData {
 	@Override
 	public String toString() {
 		return "CreditDebitChartData [XValues=" + XValues + ", creditValues=" + creditValues + ", debitValues="
-				+ debitValues + "]";
+				+ debitValues + ", currency=" + currency + "]";
 	}
+
+
 	
 	
 }
