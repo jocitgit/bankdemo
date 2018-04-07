@@ -1,0 +1,110 @@
+
+	h1{
+		text-align: center;
+		font-style: italic;
+	
+	}
+	
+	nav {
+    width: 100%;
+    height: 67px;
+    background: #3780d9;
+}
+	
+	nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #9bccf9;	
+	}
+
+	nav li {
+    float: left;
+	}
+
+	nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+	}
+
+	nav li a:hover {
+    background-color: #F5F5F5;
+    color:black;
+	}
+	
+	body
+	{
+		padding-bottom:60px;
+	
+	}
+	
+	header
+	{
+		background-color:#9bccf9;
+		color:black;
+	}
+	
+	table {
+		border-collapse: collapse;
+	}
+
+	table, th, td {
+	    border: 1px solid black;
+	    text-align:center;
+	    margin:auto;
+	    align:center;
+	    background-color:white;
+	    color:black;
+	}
+
+	
+	
+	ul {
+		list-style-type:none;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+	}
+	
+	li {
+		
+	}
+	
+	
+	footer {
+		position: fixed;
+		text-align: center;
+		bottom: 0;
+		width: 100%;
+		height: 60px;
+		font-size: 12px; 
+		background-color: #9bccf9;
+	}
+	
+
+	
+	button[type=submit]{
+    border: none;
+    padding: 8px 15px 8px 15px;
+    background: #FF8500;
+    color: #fff;
+    box-shadow: 1px 1px 4px #DADADA;
+    -moz-box-shadow: 1px 1px 4px #DADADA;
+    -webkit-box-shadow: 1px 1px 4px #DADADA;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+	}
+		
+
+
+
+
+
+
+
+
