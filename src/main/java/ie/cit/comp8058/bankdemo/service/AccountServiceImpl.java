@@ -196,7 +196,7 @@ public class AccountServiceImpl implements AccountService {
 			if (groupBy=="day") {
 				data.addXValue(total.getToDate().format(formatter));
 			} else {
-				data.addXValue(total.getFromDate().format(formatter) + "to" + total.getToDate().format(formatter));
+				data.addXValue(total.getFromDate().format(formatter) + " to " + total.getToDate().format(formatter));
 			}
 			data.addCreditValue(total.getTotalCredit());
 			data.addDebitValue(total.getTotalDebit());
