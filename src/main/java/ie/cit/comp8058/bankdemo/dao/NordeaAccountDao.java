@@ -279,6 +279,7 @@ public class NordeaAccountDao implements AccountDao {
 					// Standard code if no Nordea error
 					continuationKey = responseNode.path("_continuationKey").asText();
 				}
+				///////////////////////////////////////////////////
 				
 				//System.out.println("key(" + continuationKey + ")");
 				nextUri = uri + "?continuationKey=" + continuationKey;
@@ -339,6 +340,10 @@ public class NordeaAccountDao implements AccountDao {
 					// Standard code if no Nordea error
 					continuationKey = responseNode.path("_continuationKey").asText();
 				}
+				/////////////////////////////////////////////////
+				
+				
+				
 				nextUri = uri + "&continuationKey=" + continuationKey;
 
 				parser = responseNode.path("transactions").traverse();
