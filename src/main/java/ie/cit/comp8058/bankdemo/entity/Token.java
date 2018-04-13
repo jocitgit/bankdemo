@@ -25,6 +25,13 @@ public class Token {
 	public void setToken_type(String token_type) {
 		this.token_type = token_type;
 	}
+	@Override
+	public String toString() {
+		return "Token [access_token=" + access_token + ", expires_in=" + expires_in + ", token_type=" + token_type
+				+ "]";
+	}
+	
+	
 	
 	
 }
