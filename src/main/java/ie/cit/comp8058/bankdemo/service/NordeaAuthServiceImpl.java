@@ -66,6 +66,7 @@ public class NordeaAuthServiceImpl implements AuthService {
 		Token token = restTemplate.postForObject( uri, request , Token.class );
 		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
 		//System.out.println(response.getBody());
+		//System.out.println(token);
 		//System.out.println(token.getAccess_token());
 		//System.out.println(token.getToken_type());
 		//System.out.println(token.getExpires_in());

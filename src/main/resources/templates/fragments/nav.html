@@ -4,7 +4,8 @@
 <body>	
 	<nav id="nav" th:fragment="nav">	
 		<ul>
-				<li><a href="/accounts">Account List</a></li>				
+				<li><a href="/accounts">Account List</a></li>
+				<li th:unless="${accountId == null || accountId == ''}"><a th:href="@{/accounts/__${accountId}__}">Account Dashboard</a></li>				
 				<li><a href="/logout">Logout</a></li>
 		</ul>	
 	</nav>

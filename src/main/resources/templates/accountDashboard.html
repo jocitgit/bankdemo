@@ -12,11 +12,11 @@
 				<td th:text="${account._id}">Id</td>
 			</tr>
 			<tr>
-				<td>NumValue</td>
+				<td>Account Number Value</td>
 				<td th:text="${account.accountNumber.value}">NumValue</td>
 			</tr>
 			<tr>
-				<td>NumType</td>
+				<td>Account Number Type</td>
 				<td th:text="${account.accountNumber._type}">NumType</td>
 			</tr>
 			<tr>
@@ -24,7 +24,7 @@
 				<td th:text="${account.currency}">Currency</td>
 			</tr>
 			<tr>
-				<td>Type</td>
+				<td>Account Type</td>
 				<td th:text="${account.accountType}">Type</td>
 			</tr>
 			<tr>
@@ -36,23 +36,23 @@
 				<td th:text="${account.bookedBalance}">Booked Balance</td>
 			</tr>
 			<tr>
-				<td>BankName</td>
+				<td>Bank Name</td>
 				<td th:text="${account.bank.name}">BankName</td>
 			</tr>
 			<tr>
-				<td>BankBic</td>
+				<td>Bank Bic</td>
 				<td th:text="${account.bank.bic}">BankBic</td>
 			</tr>
 			<tr>
-				<td>BankCountry</td>
+				<td>Bank Country</td>
 				<td th:text="${account.bank.country}">BankCountry</td>
 			</tr>
 			<tr>
-				<td>Status</td>
+				<td>Account Status</td>
 				<td th:text="${account.status}">Status</td>
 			</tr>
 			<tr>
-				<td>CreditLimit</td>
+				<td>Credit Limit</td>
 				<td th:text="${account.creditLimit}">CreditLimit</td>
 			</tr>
 		</table>
@@ -64,7 +64,7 @@
 		<a th:href="@{/accounts/__${account._id}__/totals}">View Totals</a>
 	</div>
 	<div id="divDashChart">
-		<a th:href="@{/accounts/__${account._id}__/balanceChart}">View Balance Chart</a>
+		<a th:href="@{/accounts/__${account._id}__/balanceChart}">View Balance Chart</a><br/>
 		<a th:href="@{/accounts/__${account._id}__/creditDebitChart}">View Credit/Debit Chart</a>
 	</div>
 

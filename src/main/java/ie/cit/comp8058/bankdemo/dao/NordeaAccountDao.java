@@ -145,6 +145,7 @@ public class NordeaAccountDao implements AccountDao {
 		ObjectMapper objectMapper = new ObjectMapper();		
 		
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+		//System.out.println(response.getBody());
 		try {
 			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 
 			txnPage.setNextKey(responseNode.path("_continuationKey").asText());
@@ -279,6 +280,7 @@ public class NordeaAccountDao implements AccountDao {
 					// Standard code if no Nordea error
 					continuationKey = responseNode.path("_continuationKey").asText();
 				}
+				///////////////////////////////////////////////////
 				
 				//System.out.println("key(" + continuationKey + ")");
 				nextUri = uri + "?continuationKey=" + continuationKey;
@@ -322,7 +324,7 @@ public class NordeaAccountDao implements AccountDao {
 		do {
 			
 			response = restTemplate.exchange(nextUri, HttpMethod.GET, entity, String.class);
-
+			//System.out.println(response.getBody());
 			try {
 				responseNode = objectMapper.readTree(response.getBody()).path("response"); 
 				
@@ -339,6 +341,10 @@ public class NordeaAccountDao implements AccountDao {
 					// Standard code if no Nordea error
 					continuationKey = responseNode.path("_continuationKey").asText();
 				}
+				/////////////////////////////////////////////////
+				
+				
+				
 				nextUri = uri + "&continuationKey=" + continuationKey;
 
 				parser = responseNode.path("transactions").traverse();
