@@ -197,8 +197,7 @@ public class NordeaAccountDao implements AccountDao {
 			}
 		}
 
-		//System.out.println(uri);
-		
+		// Construct GET request
 		HttpHeaders headers2 = new HttpHeaders();
 		headers2.setContentType(MediaType.APPLICATION_JSON);
 		headers2.add("Accept", "application/json");
@@ -211,6 +210,7 @@ public class NordeaAccountDao implements AccountDao {
 		TransactionPage txnPage = new TransactionPage();
 		ObjectMapper objectMapper = new ObjectMapper();		
 		
+		// Parse response to extract transactions and next page key
 		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 		try {
 			JsonNode responseNode = objectMapper.readTree(response.getBody()).path("response"); 

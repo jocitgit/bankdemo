@@ -1,9 +1,7 @@
 package ie.cit.comp8058.bankdemo.controller;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +27,6 @@ public class AccountController {
 
 	@Autowired
 	AccountService accountService;
-	
-	/*
-	// Binds <input type=date> format 'yyyy'MM-dd to Date request parameter
-	@InitBinder
-    public void initBinder(WebDataBinder binder) {
-       binder.registerCustomEditor(Date.class, new CustomDateEditor(DATE_FORMAT, true));
-    }
-   */
-	
-	
 	
 	@RequestMapping("/accounts")
 	public String getAccounts(@CookieValue(value="bank_token", required=false) String accessToken, Model model) {
@@ -82,6 +70,7 @@ public class AccountController {
 		String txnToDate = "";
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		
+		// If the user has specified a time period such as 'previous week' set the date range
 		if (dateFilter != null) {
 			toDate = LocalDate.now();
 			switch (dateFilter) {
@@ -99,20 +88,17 @@ public class AccountController {
 			}
 		}
 		
-		
+		// If no dates are set, get the first page of transactions
 		if (fromDate == null || toDate == null) {
 			txnPage = accountService.getTransactionPageByAccountId(accessToken, id, continuationKey);
+		// Otherwise get the first page of transactions within the date range
 		} else {
-			//txnFromDate = DATE_FORMAT.format(fromDate);
-			//txnToDate = DATE_FORMAT.format(toDate);
 			txnFromDate = fromDate.format(formatter);
 			txnToDate = toDate.format(formatter);
 			txnPage = accountService.getTransactionPageByAccountIdAndDate(accessToken, id, txnFromDate, txnToDate, continuationKey);
 		}
 		
-		
-		//System.out.println("PrevKey: " + previousKey);
-		
+		// Add the transactions to the view, along with the links to the next and previous pages
 		if (txnPage != null) {
 			model.addAttribute("txns", txnPage.getTransactions());	
 			model.addAttribute("currentKey", continuationKey);
@@ -129,7 +115,6 @@ public class AccountController {
 	}
 	
 
-	
 	@GetMapping("/accounts/{id}/totals")
 	public String getTotals(@CookieValue(value="bank_token", required=false) String accessToken, 
 			@PathVariable("id") String id, 
@@ -213,8 +198,6 @@ public class AccountController {
 			throw new ItemNotFoundException();
 		}
 
-		//model.addAttribute("fromDate", txnFromDate);
-		//model.addAttribute("toDate", txnToDate);
 		model.addAttribute("accountId", id);
 		model.addAttribute("chartXValues", data.getXValues());
 		model.addAttribute("chartYValues", data.getYValues());
@@ -251,8 +234,6 @@ public class AccountController {
 		}
 		
 		CreditDebitChartData data = accountService.getCreditDebitChartData(accessToken, id, txnFromDate, txnToDate, groupBy);
-
-		//System.out.println(data);
 		
 		if (data!=null) {
 			model.addAttribute("accountId", id);

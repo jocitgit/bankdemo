@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ie.cit.comp8058.bankdemo.entity.Token;
+import ie.cit.comp8058.bankdemo.exception.AuthRequestException;
 import ie.cit.comp8058.bankdemo.service.AuthService;
 
 @Controller
@@ -18,7 +19,6 @@ public class AuthController {
 	
 	@RequestMapping("/login")
 	public String login(@RequestParam("withUI") boolean withUI) {
-		// TODO - Set up http redirect/response here??
 		
 		String uri = authService.getLoginUri(withUI);
 		
@@ -29,7 +29,6 @@ public class AuthController {
     public String logout(HttpServletResponse response) {
 		
 		Cookie bankCookie = new Cookie("bank_token", "");
-		//bankCookie.setHttpOnly(true);
 		bankCookie.setMaxAge(0);
 		response.addCookie(bankCookie);
 		
@@ -41,8 +40,11 @@ public class AuthController {
         
         		
 		Token token = authService.getAccessToken(code, state);
-		//store token in cookie and redirect
 		
+		if (token == null) {
+			throw new AuthRequestException();
+		}
+		// Store token in cookie and redirect
 		Cookie bankCookie = new Cookie("bank_token", token.getAccess_token());
 		bankCookie.setHttpOnly(true);
 		bankCookie.setMaxAge(Integer.parseInt(token.getExpires_in()));
