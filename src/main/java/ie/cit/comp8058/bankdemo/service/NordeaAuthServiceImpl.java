@@ -34,12 +34,12 @@ public class NordeaAuthServiceImpl implements AuthService {
 	
 	@Override
 	public Token getAccessToken(String code, String state) {
-		        
+				        
         if (code == null || state == null) {
         	return null;
         }
         
-        if (state != STATE_CODE) {
+        if (!state.equals(STATE_CODE)) {
         	return null;
         }
         		
