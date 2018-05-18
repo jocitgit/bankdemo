@@ -7,9 +7,15 @@
 	<h1 th:text="#{account.list.title}">Default Title</h1>
 <div id="divAcctList">
 <table>
+	<tr>
+		<th>Account Id</th>
+		<th>Balance</th>
+		<th>Currency</th>
+	</tr>
 	<tr th:each="account: ${accounts}">
 		<td><a th:text="${account._id}" th:href="@{/accounts/__${account._id}__}">Id</a></td>
 		<td th:text="${account.availableBalance}">Balance</td>
+		<td th:text="${account.currency}">Currency</td>
 	</tr>
 </table>
 </div>

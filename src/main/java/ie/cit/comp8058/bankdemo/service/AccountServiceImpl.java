@@ -72,9 +72,10 @@ public class AccountServiceImpl implements AccountService {
 		if (fromDate==null || toDate==null) {
 			return null;
 		}
-		//System.out.println(LocalTime.now());
+		
+		// Retrieve the transactions for the date range
 		txns = accountDao.getTransactionsByAccountIdAndDate(accessToken, id, fromDate, toDate);
-		//System.out.println(LocalTime.now());
+		
 		
 		if (txns == null) {
 			return null;
@@ -84,12 +85,10 @@ public class AccountServiceImpl implements AccountService {
 			return totals; //empty list
 		}
 		
-		Collections.reverse(txns); // put txns in ascending order
-				
-		startDate = LocalDate.parse(fromDate, formatter);
+		Collections.reverse(txns); // put txns in ascending date order
 		
-			//startDate = LocalDate.parse(txns.get(0).getBookingDate(), formatter);
-		
+		// Identify the date range for the first grouping			
+		startDate = LocalDate.parse(fromDate, formatter);				
 		nextDate = getNextDate(startDate, groupBy);
 		
 		TransactionTotal txnTotal = new TransactionTotal();
@@ -98,6 +97,7 @@ public class AccountServiceImpl implements AccountService {
 		ListIterator<Transaction> iterator = txns.listIterator();
 		Transaction t;
 		
+		// Iterate through the transactions, grouping them according to date
 		while(iterator.hasNext()) {
 			t = iterator.next();
 			if (LocalDate.parse(t.getBookingDate(), formatter).isBefore(nextDate)) {
@@ -123,6 +123,7 @@ public class AccountServiceImpl implements AccountService {
 		
 	}
 	
+	// Helper function to identify date ranges according to groupBy parameter
 	private LocalDate getNextDate(LocalDate currentDate, String groupBy) {
 		switch (groupBy) {
 		case "month":
@@ -135,13 +136,16 @@ public class AccountServiceImpl implements AccountService {
 		return currentDate;
 	}
 
+	// Format transaction data for balance chart
 	@Override
 	public BalanceChartData getBalanceChartData(String accessToken, String id, String fromDate, String toDate) {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yy");
 		
+		// Get daily transaction totals
 		List<TransactionTotal> dailyTotals = getTransactionTotals(accessToken, id, fromDate, toDate, "day");
 		
+		// Get current account balance
 		Account account = accountDao.getAccountById(accessToken, id);
 
 		if (dailyTotals==null || account==null) {
@@ -149,40 +153,42 @@ public class AccountServiceImpl implements AccountService {
 		}
 		
 		BigDecimal currentBalance = account.getBookedBalance();
-		//System.out.println(currentBalance);
-		
+				
 		BalanceChartData data = new BalanceChartData();
 		data.setCurrency(account.getCurrency());
 		
 		BigDecimal adjustments = BigDecimal.ZERO;
 		
+		// Calculate the initial balance at the start of the time period
 		for (TransactionTotal total: dailyTotals) {
 			adjustments = adjustments.add(total.getTotal());			
 		}
 		
-		//System.out.println(adjustments);
 		BigDecimal balance = currentBalance.subtract(adjustments);
-		//System.out.println(balance);
 		
+		// Work forward from the initial balance to calculate daily balances
+		// and add them to the chart data object
 		for (TransactionTotal total: dailyTotals) {
 			data.addXValue(total.getToDate().format(formatter));
 			balance = balance.add(total.getTotal());
 			data.addYValue(balance);
 		}
 		
-		//System.out.println(data);
 		return data;
 		
 	}
 
+	// Format transaction data for credit/debit chart
 	@Override
 	public CreditDebitChartData getCreditDebitChartData(String accessToken, String id, String fromDate, String toDate,
 			String groupBy) {
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yy");
 		
+		//Get account details
 		Account account = accountDao.getAccountById(accessToken, id);
 		
+		// Get transaction totals for date range, grouped according to groupBy parameter
 		List<TransactionTotal> totals = getTransactionTotals(accessToken, id, fromDate, toDate, groupBy);
 		
 		if (account==null || totals==null) {
@@ -192,6 +198,7 @@ public class AccountServiceImpl implements AccountService {
 		CreditDebitChartData data = new CreditDebitChartData();
 		data.setCurrency(account.getCurrency());
 		
+		// Add transaction totals to chart data object
 		for (TransactionTotal total : totals) {
 			if (groupBy=="day") {
 				data.addXValue(total.getToDate().format(formatter));

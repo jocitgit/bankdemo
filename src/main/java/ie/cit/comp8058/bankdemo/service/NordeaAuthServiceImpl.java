@@ -34,16 +34,13 @@ public class NordeaAuthServiceImpl implements AuthService {
 	
 	@Override
 	public Token getAccessToken(String code, String state) {
-		
-		//System.out.println("Code: " + code);
-        //System.out.println("State: " + state);
-        
+				        
         if (code == null || state == null) {
-        	//TODO - error handling & return
+        	return null;
         }
         
-        if (state != STATE_CODE) {
-        	//TODO - error handling & return
+        if (!state.equals(STATE_CODE)) {
+        	return null;
         }
         		
 		//POST request with headers
@@ -58,20 +55,9 @@ public class NordeaAuthServiceImpl implements AuthService {
 
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
-		//ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
-
-		
-		//TODO - get/postForObject/Entity throw RestClientException
 		String uri = authUri + "/access_token";
 		Token token = restTemplate.postForObject( uri, request , Token.class );
-		//System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
-		//System.out.println(response.getBody());
-		//System.out.println(token);
-		//System.out.println(token.getAccess_token());
-		//System.out.println(token.getToken_type());
-		//System.out.println(token.getExpires_in());
-		
-		//TODO - error handling? 
+	
 		return token;
 		
 	}
