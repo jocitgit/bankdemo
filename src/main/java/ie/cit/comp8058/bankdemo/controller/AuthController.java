@@ -40,7 +40,7 @@ public class AuthController {
         
         		
 		Token token = authService.getAccessToken(code, state);
-		
+        
 		if (token == null) {
 			throw new AuthRequestException();
 		}
